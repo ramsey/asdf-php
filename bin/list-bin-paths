@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 # Register PHP's binaries, and Composer's home vendor binaries.
-echo "bin sbin .composer/vendor/bin"
+printf "bin sbin .composer/vendor/bin\n"

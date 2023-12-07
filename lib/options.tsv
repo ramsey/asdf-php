@@ -1,0 +1,32 @@
+common name	brew-pkg apt-pkg dnf-pkg	pkg name	header file(s)	option (append = to add prefix)	description	required|optional
+argon2	argon2 libargon2-dev libargon2-devel	libargon2		--with-password-argon2	Enables use of Argon2 password hashing	optional
+avif	libavif libavif-dev libavif-devel	libavif		--with-avif	Includes AVIF support for image processing with GD	optional
+bzip2	bzip2 libbz2-dev bzip2-devel		bzlib.h	--with-bz2=	Includes bzip2 compression support	required
+curl	curl libcurl4-openssl-dev libcurl-devel	libcurl		--with-curl	Includes cURL support	required
+enchant	enchant libenchant-2-dev enchant2-devel	enchant-2		--with-enchant	Includes Enchant spellcheck support	optional
+ffi	libffi libffi-dev libffi-devel	libffi		--with-ffi	Includes foreign function interface support	optional
+freetype	freetype libfreetype-dev freetype-devel	freetype2		--with-freetype	Includes Freetype 2 font support for image processing with GD	required
+gdbm	gdbm libgdbm-dev gdbm-devel		gdbm.h	--with-gdbm=	Includes GNU dbm support	optional
+gettext	gettext libc6-dev glibc-devel		libintl.h	--with-gettext=	Includes translation support with GNU gettext	required
+gmp	gmp libgmp-dev gmp-devel	gmp		--with-gmp=	Includes GNU multiple precision support	required
+iconv	libiconv libc6-dev glibc-devel		iconv.h	--with-iconv=	Includes character encoding conversion support	required
+icu	icu4c libicu-dev libicu-devel	icu-uc		--enable-intl	Includes internationalization support with ICU	required
+jpeg	libjpeg-turbo libjpeg-dev libjpeg-turbo-devel	libjpeg		--with-jpeg	Includes JPEG support for image processing with GD	required
+kerberos	krb5 libkrb5-dev krb5-devel	krb5		--with-kerberos	Includes Kerberos support in openssl_*	optional
+odbc	unixodbc unixodbc-dev unixODBC-devel	odbc		--with-unixODBC --with-pdo-odbc=unixODBC,	Includes ODBC support	optional
+oniguruma	oniguruma libonig-dev oniguruma-devel	oniguruma		--enable-mbregex	Enables use of mb_ereg* functions	required
+openssl	openssl libssl-dev openssl-devel	openssl		--with-openssl	Includes OpenSSL support	required
+png	libpng libpng-dev libpng-devel	libpng		--enable-gd	Includes PNG support for image processing with GD	required
+postgresql	libpq libpq-dev libpq-devel	libpq		--with-pgsql= --with-pdo-pgsql=	Enables use of PostgreSQL	optional
+pspell	aspell libpspell-dev aspell-devel		pspell.h pspell/pspell.h	--with-pspell=	Includes Pspell spellcheck support	optional
+readline	libedit libedit-dev libedit-devel	libedit		--with-libedit	Includes Readline support	required
+snmp	net-snmp libsnmp-dev net-snmp-devel	netsnmp		--with-snmp=	Includes SNMP support	optional
+sodium	libsodium libsodium-dev libsodium-devel	libsodium		--with-sodium	Includes Sodium cryptographic support	required
+sqlite	sqlite3 libsqlite3-dev libsqlite3x-devel	sqlite3		--with-sqlite3 --with-pdo-sqlite	Includes SQLite3 support	required
+tidy	tidy-html5 libtidy-dev libtidy-devel	tidy		--with-tidy=	Includes Tidy support	optional
+webp	webp libwebp-dev libwebp-devel	libwebp		--with-webp	Includes WEBP support for image processing with GD	optional
+xml	libxml2 libxml2-dev libxml2-devel	libxml-2.0		--with-libxml --enable-dom --enable-soap	Includes XML and DOM parsing support	required
+xpm	libxpm libxpm-dev libXpm-devel	xpm		--with-xpm	Includes XPM support for image processing with GD	optional
+xslt	libxslt libxslt1-dev libxslt-devel	libxslt		--with-xsl	Includes XSLT support	optional
+zip	libzip libzip-dev libzip-devel	libzip		--with-zip	Includes Zip archive support	required
+zlib	zlib zlib1g-dev zlib-devel	zlib		--with-zlib	Includes zlib compression support	required

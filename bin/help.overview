@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+version="${ASDF_INSTALL_VERSION:-}"
+
+cat <<-EOF
+Basic usage:
+
+  asdf install php $version
+  asdf global php $version
+
+  php --version
+  composer --version
+  pecl version
+
+Check the asdf documentation for more instructions on how to install & manage versions of PHP. Please make sure you have the required system dependencies installed before trying to install PHP. If you do not, the asdf-php installer will provide hints on what you need.
+
+If you use Composer to install a global package, like friendsofphp/php-cs-fixer, that has binaries, you will need to run "asdf reshim php" for the binary to be in your path.
+EOF

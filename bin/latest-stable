@@ -4,8 +4,11 @@ set -euo pipefail
 
 current_script_path=$(realpath "${BASH_SOURCE[0]}")
 plugin_dir=$(realpath "$(dirname "$(dirname "$current_script_path")")")
+query="${1:-}"
 
 # shellcheck source=../lib/versions.bash
 . "${plugin_dir}/lib/versions.bash"
 
-list_stable_versions "" | xargs echo
+version="$(list_stable_versions "$query" | tail -n1 | xargs echo)"
+
+printf "%s\n" "$version"

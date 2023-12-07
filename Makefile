@@ -1,14 +1,19 @@
-SH_SRCFILES = $(shell git ls-files "bin/*")
-SHFMT_BASE_FLAGS = -s -i 2 -ci
-
 fmt:
-	shfmt -w $(SHFMT_BASE_FLAGS) $(SH_SRCFILES)
+	shfmt --write .
 .PHONY: fmt
 
 fmt-check:
-	shfmt -d $(SHFMT_BASE_FLAGS) $(SH_SRCFILES)
+	shfmt --diff .
 .PHONY: fmt-check
 
 lint:
-	shellcheck $(SH_SRCFILES)
+	shellcheck --shell=bash --exclude=SC1091 --external-sources --source-path="bin:lib" bin/* lib/*.bash test/bin/*.bats test/lib/*.bats
 .PHONY: lint
+
+test:
+	bats test/bin test/lib
+.PHONY: test
+
+coverage:
+	bashcov --root . -- bats test/bin test/lib
+.PHONY: coverage

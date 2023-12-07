@@ -1,57 +1,87 @@
 # asdf-php
 
-[PHP](https://www.php.net) plugin for asdf version manager
+A [PHP](https://www.php.net) plugin for the [asdf version manager](https://asdf-vm.com).
 
-_Original version of this plugin created by
-[@Stratus3D](https://github.com/Stratus3D)_
+_Original version of this plugin created by [@Stratus3D](https://github.com/Stratus3D)_
 
 ## Build History
 
 [![Build history](https://buildstats.info/github/chart/asdf-community/asdf-php?branch=master)](https://github.com/asdf-community/asdf-php/actions)
 
-## Prerequirements
+## Supported Versions of PHP
 
-Check the [.github/workflows/workflow.yml](.github/workflows/workflow.yml) for
-dependencies, paths, and environment variables needed to install the latest PHP
-version. To be honest, supporting a major version other than the latest without
-any extra work from the user is an endless endeavor that won't ever really work
-too well. It's not that we don't support them at all, but it's almost impossible
-for us to support them.
+- 8.1
+- 8.2
+- 8.3
 
-## Installation
+## Installing the Plugin
 
 ```bash
 asdf plugin-add php https://github.com/asdf-community/asdf-php.git
 ```
 
-## Note
-
-Composer is installed globally alongside PHP by default. If your application requires additional php extensions, you may need to install them via `pecl`. For example:
+## Installing a PHP Version
 
 ```bash
-pecl install redis
-pecl install imagick
-
-echo "extension=redis.so
-extension=imagick.so" > $(asdf where php)/conf.d/php.ini
+asdf install php <version>
 ```
 
-#### macOS
+If you are missing any required dependencies, the installer will provide details on which packages are missing and how to install them on your system.
 
-To install PHP on macOS, you'll need a set of packages [installed via homebrew](https://github.com/asdf-community/asdf-php/blob/248e9c6e2a7824510788f05e8cee848a62200b65/.github/workflows/workflow.yml#L52).
+> [!NOTE]
+> Composer is installed globally alongside PHP, by default.
 
-There's also a set of optional packages which enable additional extensions to be enabled:
+> [!TIP]
+> If you require additional PHP extensions, you may install them using `pecl`, which is also installed alongside PHP. For example:
+>
+> ```bash
+> pecl install redis
+> pecl install imagick
+>
+> echo "extension=redis" > $(asdf where php)/etc/php.d/redis.ini
+> echo "extension=imagick" > $(asdf where php)/etc/php.d/imagick.ini
+> ```
 
-```
-brew install gmp libsodium imagemagick
-```
+### macOS
 
-Note that the supported extension are not exhaustive, so you may need edit the `bin/install` script to support additional extension. Feel free to submit a PR for any missing extensions.
+To install PHP on macOS, you'll need the [Xcode command line tools](https://developer.apple.com/xcode/resources/) and [Homebrew](https://brew.sh).
 
-#### PHP-PEAR
+### Optional Packages
 
-If PHP PEAR is down you can install PHP without PEAR. Specify `PHP_WITHOUT_PEAR` variable with any value
-(except no), eg:
+While installing, you might see a message in the output about missing optional packages. asdf will continue building PHP. However, you may use `Ctrl-C` to stop the build and install any optional packages you wish to include.
+
+The message about optional packages will look something like this:
+
+    The following optional packages are missing:
+
+      libargon2-dev         Enables use of Argon2 password hashing
+      libavif-dev           Includes AVIF support for image processing with GD
+      libenchant-2-dev      Includes Enchant spellcheck support
+      libffi-dev            Includes foreign function interface support
+      libgdbm-dev           Includes GNU dbm support
+      libkrb5-dev           Includes Kerberos support in openssl_*
+      unixodbc-dev          Includes ODBC support
+      libpq-dev             Enables use of PostgreSQL
+      libpspell-dev         Includes Pspell spellcheck support
+      libsnmp-dev           Includes SNMP support
+      libtidy-dev           Includes Tidy support
+      libwebp-dev           Includes WEBP support for image processing with GD
+      libxpm-dev            Includes XPM support for image processing with GD
+      libxslt1-dev          Includes XSLT support
+
+    Use APT to install missing optional packages:
+
+      apt-get install -y libargon2-dev libavif-dev libenchant-2-dev libffi-dev libgdbm-dev libkrb5-dev unixodbc-dev libpq-dev libpspell-dev libsnmp-dev libtidy-dev libwebp-dev libxpm-dev libxslt1-dev
+
+    asdf-php: Missing some optional packages; see above.
+
+      Use Ctrl-C to cancel the build and install these, if you wish to include them.
+
+    asdf-php: Configuring the build (this can take a while)...
+
+### PEAR
+
+If you wish to exclude PEAR from your PHP installation, specify the `PHP_WITHOUT_PEAR` variable with any value (except "no"), e.g.:
 
 ```bash
 PHP_WITHOUT_PEAR=yes asdf install php <version>
@@ -59,12 +89,11 @@ PHP_WITHOUT_PEAR=yes asdf install php <version>
 
 ## Usage
 
-Check [asdf](https://github.com/asdf-vm/asdf) readme for instructions on how to
-install & manage versions.
+Check the [asdf documentation](https://asdf-vm.com/manage/versions.html) for instructions on how to install & manage versions.
 
 ## Global Composer Dependencies
 
-Composer is installed globally by default. To use it, you'll need to reshim:
+Composer is installed globally alongside PHP, by default. If you install any Composer packages globally, you'll need to run the `reshim` command. Afterward, you will be able to execute the command directly.
 
 ```shell
 composer global require friendsofphp/php-cs-fixer
@@ -74,5 +103,4 @@ php-cs-fixer --version
 
 ## License
 
-Licensed under the
-[Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).

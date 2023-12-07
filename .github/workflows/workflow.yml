@@ -3,72 +3,343 @@ name: Main workflow
 on:
   pull_request:
   push:
+  workflow_dispatch:
   schedule:
     - cron: 0 0 * * 5
 
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  plugin-test-docker:
-    strategy:
-      matrix:
-        container:
-          - ubuntu:latest
-        php-version:
-          - 7.4.14
-          - 8.0.0
-          - latest
 
-    env:
-      DEBIAN_FRONTEND: noninteractive
-
-    container:
-      image: ${{ matrix.container }}
-
+  lint:
+    name: Static analysis
     runs-on: ubuntu-latest
-
     steps:
-      - name: Install packages
-        run: apt-get update && apt-get install -y autoconf bison build-essential curl gettext git libgd-dev libcurl4-openssl-dev libedit-dev libicu-dev libjpeg-dev libmysqlclient-dev libonig-dev libpng-dev libpq-dev libreadline-dev libsqlite3-dev libssl-dev libxml2-dev libzip-dev openssl pkg-config re2c zlib1g-dev
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run shellcheck
+        run: make lint
 
-      - name: asdf_plugin_test
-        uses: asdf-vm/actions/plugin-test@v1
-        with:
-          command: php --version
-          version: ${{ matrix.php-version }}
+  style:
+    name: Style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install shfmt
+        run: |
+          curl -fsSL -o shfmt -C - https://github.com/mvdan/sh/releases/download/v3.7.0/shfmt_v3.7.0_linux_amd64
+          chmod +x shfmt
+          sudo mv shfmt /usr/local/bin/shfmt
+      - name: Run shfmt
+        run: make fmt-check
 
-  plugin-test-vm:
+  test:
+    name: Unit tests
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
+          - ubuntu-latest
           - macos-latest
-        php-version:
-          - 7.4.14
-          - 8.0.0
-          - latest
-
-    runs-on: ${{ matrix.os }}
-
     steps:
-      - name: Install packages
-        run: brew install autoconf automake bison freetype gd gettext icu4c krb5 libedit libiconv libjpeg libpng libxml2 libzip openssl@1.1 pkg-config re2c zlib
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install bats-core (on Ubuntu)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          git clone https://github.com/bats-core/bats-core.git
+          sudo ./bats-core/install.sh /usr/local
+      - name: Install bats-core (on macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: brew install bats-core
+      - name: Run tests
+        run: make test
 
-      - name: Install conflicting packages
-        run: brew install openssl@3
+  #coverage:
+  #  needs: [lint, style, test]
+  #  name: Code coverage
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Checkout repository
+  #      uses: actions/checkout@v4
+  #      with:
+  #        submodules: recursive
+  #    - name: Set up Ruby
+  #      uses: ruby/setup-ruby@v1
+  #      with:
+  #        ruby-version: 3.3
+  #    - name: Install Ruby dependencies
+  #      run: bundle install
+  #    - name: Install bats-core
+  #      run: |
+  #        git clone https://github.com/bats-core/bats-core.git
+  #        sudo ./bats-core/install.sh /usr/local
+  #    - name: Run tests with coverage reporting
+  #      run: bashcov -- bats test/bin test/lib
+  #    - name: Upload reports to Codecov
+  #      uses: codecov/codecov-action@v3
 
-      - name: asdf_plugin_test
-        uses: asdf-vm/actions/plugin-test@v1
+  plugin-test-debian:
+    needs: [lint, style, test]
+    #needs: [coverage]
+    name: "Plugin test, Debian"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          - debian:11
+        php-version:
+          - latest:8.1
+          - latest:8.2
+          - latest:8.3
+    env:
+      ASDF_PHP_VERBOSE: true
+      DEBIAN_FRONTEND: noninteractive
+    container:
+      image: ${{ matrix.container }}
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+            autoconf \
+            bison \
+            curl \
+            g++ \
+            gcc \
+            git \
+            libargon2-dev \
+            libavif-dev \
+            libbz2-dev \
+            libcurl4-openssl-dev \
+            libedit-dev \
+            libenchant-2-dev \
+            libffi-dev \
+            libfreetype-dev \
+            libgdbm-dev \
+            libgmp-dev \
+            libicu-dev \
+            libjpeg-dev \
+            libkrb5-dev \
+            libonig-dev \
+            libpng-dev \
+            libpq-dev \
+            libpspell-dev \
+            libsnmp-dev \
+            libsodium-dev \
+            libsqlite3-dev \
+            libssl-dev \
+            libtidy-dev \
+            libwebp-dev \
+            libxml2-dev \
+            libxpm-dev \
+            libxslt1-dev \
+            libzip-dev \
+            make \
+            pkg-config \
+            re2c \
+            unixodbc-dev \
+            zlib1g-dev
+      - name: Install and test version from plugin
+        uses: asdf-vm/actions/plugin-test@v3
         with:
           command: php --version
           version: ${{ matrix.php-version }}
 
-  format:
+  plugin-test-fedora:
+    needs: [lint, style, test]
+    #needs: [coverage]
+    name: "Plugin test, Fedora"
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          - fedora:39
+        php-version:
+          - latest:8.1
+          - latest:8.2
+          - latest:8.3
+    env:
+      ASDF_PHP_VERBOSE: true
+    container:
+      image: ${{ matrix.container }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          dnf install -y \
+            aspell-devel \
+            autoconf \
+            bison \
+            bzip2-devel \
+            enchant2-devel \
+            freetype-devel \
+            g++ \
+            gcc \
+            gdbm-devel \
+            git \
+            gmp-devel \
+            krb5-devel \
+            libargon2-devel \
+            libavif-devel \
+            libcurl-devel \
+            libedit-devel \
+            libicu-devel \
+            libjpeg-turbo-devel \
+            libpng-devel \
+            libpq-devel \
+            libsodium-devel \
+            libsqlite3x-devel \
+            libtidy-devel \
+            libwebp-devel \
+            libxml2-devel \
+            libXpm-devel \
+            libxslt-devel \
+            libzip-devel \
+            make \
+            net-snmp-devel \
+            oniguruma-devel \
+            openssl-devel \
+            pkg-config \
+            re2c \
+            unixODBC-devel \
+            zlib-devel
+      - name: Install and test version from plugin
+        uses: asdf-vm/actions/plugin-test@v3
+        with:
+          command: php --version
+          version: ${{ matrix.php-version }}
 
-      - name: Install shfmt
-        run: brew install shfmt
+  plugin-test-homebrew-ubuntu:
+    needs: [lint, style, test]
+    #needs: [coverage]
+    name: "Plugin test, Homebrew on Ubuntu"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - latest:8.1
+          - latest:8.2
+          - latest:8.3
+    env:
+      ASDF_PHP_VERBOSE: true
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install dependencies
+        run: |
+          brew install --overwrite --quiet \
+            argon2 \
+            aspell \
+            autoconf \
+            bison \
+            bzip2 \
+            curl \
+            enchant \
+            freetype \
+            gcc@12 \
+            gdbm \
+            gettext \
+            git \
+            gmp \
+            icu4c \
+            krb5 \
+            libavif \
+            libedit \
+            libffi \
+            libjpeg-turbo \
+            libpng \
+            libpq \
+            libsodium \
+            libxml2 \
+            libxpm \
+            libxslt \
+            libzip \
+            make \
+            net-snmp \
+            oniguruma \
+            openssl \
+            pkg-config \
+            re2c \
+            sqlite3 \
+            tidy-html5 \
+            unixodbc \
+            webp \
+            zlib
+      - name: Install and test version from plugin
+        uses: asdf-vm/actions/plugin-test@v3
+        with:
+          command: php --version
+          version: ${{ matrix.php-version }}
 
-      - name: Run shfmt
-        run: make fmt-check
+  plugin-test-homebrew-macos:
+    needs: [lint, style, test]
+    #needs: [coverage]
+    name: "Plugin test, Homebrew on macOS"
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - latest:8.1
+          - latest:8.2
+          - latest:8.3
+    env:
+      ASDF_PHP_VERBOSE: true
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
+    steps:
+      - name: Install dependencies
+        run: |
+          brew install --overwrite --quiet \
+            argon2 \
+            aspell \
+            autoconf \
+            bison \
+            bzip2 \
+            curl \
+            enchant \
+            freetype \
+            gcc@12 \
+            gdbm \
+            gettext \
+            git \
+            gmp \
+            icu4c \
+            krb5 \
+            libavif \
+            libedit \
+            libffi \
+            libiconv \
+            libjpeg-turbo \
+            libpng \
+            libpq \
+            libsodium \
+            libxml2 \
+            libxpm \
+            libxslt \
+            libzip \
+            make \
+            net-snmp \
+            oniguruma \
+            openssl \
+            pkg-config \
+            re2c \
+            sqlite3 \
+            tidy-html5 \
+            unixodbc \
+            webp \
+            zlib
+      - name: Install and test version from plugin
+        uses: asdf-vm/actions/plugin-test@v3
+        with:
+          command: php --version
+          version: ${{ matrix.php-version }}
