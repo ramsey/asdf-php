@@ -11,5 +11,5 @@
 	[ -z "${COMPOSER_HOME:-}" ]
 	exec-env
 	[ -n "${COMPOSER_HOME:-}" ]
-	[  "${COMPOSER_HOME}" = "/path/to/install/.composer" ]
+	[ "${COMPOSER_HOME}" = "/path/to/install/.composer" ]
 }

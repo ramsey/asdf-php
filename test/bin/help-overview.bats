@@ -27,4 +27,3 @@ setup() {
 	run -0 help-overview
 	assert_line '  asdf install php 8.3.2'
 }
-
