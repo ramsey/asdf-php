@@ -15,5 +15,6 @@ test:
 .PHONY: test
 
 coverage:
-	bashcov --root . -- bats test/bin test/lib
+	rm -rf ./coverage/
+	bashcov -- bats test/bin test/lib
 .PHONY: coverage

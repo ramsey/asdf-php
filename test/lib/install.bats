@@ -589,6 +589,10 @@ teardown() {
 		return 0
 	}
 
+	# Add this for coverage reporting.
+	# shellcheck disable=SC2030
+	export PHP_WITHOUT_PEAR="yes"
+
 	run -0 php_configure "/path/to/download" "/path/to/install" "$log_file"
 	assert_output "$expected_output"
 }
@@ -1932,6 +1936,7 @@ teardown() {
 }
 
 @test "should_install_without_pear() returns success status code when PHP_WITHOUT_PEAR is set to anything other than 'no'" {
+	# shellcheck disable=SC2031
 	export PHP_WITHOUT_PEAR=yes
 	should_install_without_pear
 }

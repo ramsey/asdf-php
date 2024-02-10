@@ -62,33 +62,34 @@ jobs:
       - name: Run tests
         run: make test
 
-  #coverage:
-  #  needs: [lint, style, test]
-  #  name: Code coverage
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - name: Checkout repository
-  #      uses: actions/checkout@v4
-  #      with:
-  #        submodules: recursive
-  #    - name: Set up Ruby
-  #      uses: ruby/setup-ruby@v1
-  #      with:
-  #        ruby-version: 3.3
-  #    - name: Install Ruby dependencies
-  #      run: bundle install
-  #    - name: Install bats-core
-  #      run: |
-  #        git clone https://github.com/bats-core/bats-core.git
-  #        sudo ./bats-core/install.sh /usr/local
-  #    - name: Run tests with coverage reporting
-  #      run: bashcov -- bats test/bin test/lib
-  #    - name: Upload reports to Codecov
-  #      uses: codecov/codecov-action@v3
+  coverage:
+    needs: [lint, style, test]
+    name: Code coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3
+      - name: Install dependencies
+        run: |
+          bundle install
+          git clone https://github.com/bats-core/bats-core.git
+          sudo ./bats-core/install.sh /usr/local
+      - name: Run tests with coverage reporting
+        run: make coverage
+      - name: Upload reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          file: coverage/coverage.xml
 
   plugin-test-debian:
-    needs: [lint, style, test]
-    #needs: [coverage]
+    needs: [coverage]
     name: "Plugin test, Debian"
     runs-on: ubuntu-latest
     strategy:
@@ -155,8 +156,7 @@ jobs:
           version: ${{ matrix.php-version }}
 
   plugin-test-fedora:
-    needs: [lint, style, test]
-    #needs: [coverage]
+    needs: [coverage]
     name: "Plugin test, Fedora"
     runs-on: ubuntu-latest
     strategy:
@@ -219,8 +219,7 @@ jobs:
           version: ${{ matrix.php-version }}
 
   plugin-test-homebrew-ubuntu:
-    needs: [lint, style, test]
-    #needs: [coverage]
+    needs: [coverage]
     name: "Plugin test, Homebrew on Ubuntu"
     runs-on: ubuntu-latest
     strategy:
@@ -282,8 +281,7 @@ jobs:
           version: ${{ matrix.php-version }}
 
   plugin-test-homebrew-macos:
-    needs: [lint, style, test]
-    #needs: [coverage]
+    needs: [coverage]
     name: "Plugin test, Homebrew on macOS"
     runs-on: macos-14
     strategy:

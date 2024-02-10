@@ -12,6 +12,6 @@ setup() {
 		load '../../bin/list-bin-paths'
 	}
 
-	run list-bin-paths
+	run -0 list-bin-paths
 	assert_output "bin sbin .composer/vendor/bin"
 }
