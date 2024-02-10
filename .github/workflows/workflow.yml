@@ -77,6 +77,7 @@ jobs:
           ruby-version: 3.3
       - name: Install dependencies
         run: |
+          bundle update --bundler
           bundle install
           git clone https://github.com/bats-core/bats-core.git
           sudo ./bats-core/install.sh /usr/local
