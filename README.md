@@ -17,7 +17,7 @@ _Original version of this plugin created by [@Stratus3D](https://github.com/Stra
 ## Installing the Plugin
 
 ```bash
-asdf plugin-add php https://github.com/asdf-community/asdf-php.git
+asdf plugin add php https://github.com/asdf-community/asdf-php.git
 ```
 
 ## Installing a PHP Version
