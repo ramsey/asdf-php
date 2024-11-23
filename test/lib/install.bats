@@ -926,6 +926,81 @@ teardown() {
 	[ "${configure_options[0]}" = "--with-iconv=/opt/homebrew/opt/libiconv" ]
 }
 
+@test "add_option_header() succeeds using --with-ldap and /usr search prefix" {
+	declare -a configure_options=()
+	declare -a missing_optional_packages__keys=()
+	declare -a missing_required_packages__keys=()
+	apt_path="/path/to/apt-get"
+
+	header_file_location() {
+		[ "$1" = "ldap.h" ] && [ "$2" = "" ] && printf "/usr" && return 0
+		fail "The header_file_location command received unexpected arguments: ${*}"
+	}
+
+	update_pkg_config_path() {
+		[ "$1" = "libldap2-dev" ] && return 0
+		fail "The update_pkg_config_path command received unexpected arguments: ${*}"
+	}
+
+	((${#configure_options[@]} == 0))
+
+	add_option_header "ldap" "openldap libldap2-dev openldap-devel" "ldap.h" "--with-ldap=" "Testing description" "required"
+	run ! is_missing_optional_packages
+	run ! is_missing_required_packages
+	((${#configure_options[@]} == 1))
+	[ "${configure_options[0]}" = "--with-ldap" ]
+}
+
+@test "add_option_header() succeeds using --with-ldap and /usr/local search prefix" {
+	declare -a configure_options=()
+	declare -a missing_optional_packages__keys=()
+	declare -a missing_required_packages__keys=()
+	dnf_path="/path/to/dnf"
+
+	header_file_location() {
+		[ "$1" = "ldap.h" ] && [ "$2" = "" ] && printf "/usr" && return 0
+		fail "The header_file_location command received unexpected arguments: ${*}"
+	}
+
+	update_pkg_config_path() {
+		[ "$1" = "openldap-devel" ] && return 0
+		fail "The update_pkg_config_path command received unexpected arguments: ${*}"
+	}
+
+	((${#configure_options[@]} == 0))
+
+	add_option_header "ldap" "openldap libldap2-dev openldap-devel" "ldap.h" "--with-ldap=" "Testing description" "required"
+	run ! is_missing_optional_packages
+	run ! is_missing_required_packages
+	((${#configure_options[@]} == 1))
+	[ "${configure_options[0]}" = "--with-ldap" ]
+}
+
+@test "add_option_header() succeeds using --with-ldap and /opt/homebrew/opt/openldap search prefix" {
+	declare -a configure_options=()
+	declare -a missing_optional_packages__keys=()
+	declare -a missing_required_packages__keys=()
+	brew_path="/path/to/brew"
+
+	header_file_location() {
+		[ "$1" = "ldap.h" ] && [ "$2" = "" ] && printf "/opt/homebrew/opt/openldap" && return 0
+		fail "The header_file_location command received unexpected arguments: ${*}"
+	}
+
+	update_pkg_config_path() {
+		[ "$1" = "openldap" ] && return 0
+		fail "The update_pkg_config_path command received unexpected arguments: ${*}"
+	}
+
+	((${#configure_options[@]} == 0))
+
+	add_option_header "ldap" "openldap libldap2-dev openldap-devel" "ldap.h" "--with-ldap=" "Testing description" "required"
+	run ! is_missing_optional_packages
+	run ! is_missing_required_packages
+	((${#configure_options[@]} == 1))
+	[ "${configure_options[0]}" = "--with-ldap=/opt/homebrew/opt/openldap" ]
+}
+
 @test "add_option_php_fpm() detects _www user" {
 	id() {
 		[ "$1" = "_www" ] && return 0

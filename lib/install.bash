@@ -321,19 +321,28 @@ add_option_header() {
 	header_location="$(header_file_location "${header_files[*]}" "$additional_lookup_location" || true)"
 
 	if [ -n "$header_location" ]; then
-		# We need a special case for --with-iconv. If the header location is in
-		# a standard location (i.e., /usr or /usr/local), we won't provide a
-		# search prefix, since PHP is able to find it, and especially since
-		# iconv could be provided by glibc, in which case PHP can't find it if
-		# we provide the search prefix. If the search prefix is other than
-		# /usr or /usr/local, then we probably found iconv with Homebrew and
-		# should use the search prefix so PHP can find it.
-		if [[ "$option" == --with-iconv* && ("$header_location" = "/usr" || "$header_location" = "/usr/local") ]]; then
+		# We need special cases for --with-iconv and --with-ldap. If the header
+		# location is in a standard location (i.e., /usr or /usr/local), we won't
+		# provide a search prefix, since PHP is able to find them. If the search
+		# prefix is other than /usr or /usr/local, then we probably found them
+		# with Homebrew and should use the search prefix so PHP can find it.
+		if [[
+			("$option" == --with-iconv* || "$option" == --with-ldap*)
+			&& ("$header_location" = "/usr" || "$header_location" = "/usr/local")
+		]]; then
 			add_option "${option//=/}"
 		elif [[ "$option" == *= ]]; then
 			add_option "${option}${header_location}"
 		else
 			add_option "${option}"
+		fi
+
+		# If this is --with-ldap, then we have another special case. We should
+		# also add the location of ldap.pc to PKG_CONFIG_PATH because libcurl
+		# will use pkg-config to find ldap, as it now considers ldap a private
+		# requirement. See the "Requires.private" line in libcurl.pc.
+		if [[ "$option" == --with-ldap* ]]; then
+			update_pkg_config_path "$package_name"
 		fi
 	elif [ "$state" = "required" ]; then
 		missing_required_package "$package_name" "$description"
