@@ -13,6 +13,7 @@ iconv	libiconv libc6-dev glibc-devel		iconv.h	--with-iconv=	Includes character e
 icu	icu4c libicu-dev libicu-devel	icu-uc		--enable-intl	Includes internationalization support with ICU	required
 jpeg	libjpeg-turbo libjpeg-dev libjpeg-turbo-devel	libjpeg		--with-jpeg	Includes JPEG support for image processing with GD	required
 kerberos	krb5 libkrb5-dev krb5-devel	krb5		--with-kerberos	Includes Kerberos support in openssl_*	optional
+ldap	openldap libldap2-dev openldap-devel		ldap.h	--with-ldap=	Includes LDAP support (and required by libcurl)	required
 odbc	unixodbc unixodbc-dev unixODBC-devel	odbc		--with-unixODBC --with-pdo-odbc=unixODBC,	Includes ODBC support	optional
 oniguruma	oniguruma libonig-dev oniguruma-devel	oniguruma		--enable-mbregex	Enables use of mb_ereg* functions	required
 openssl	openssl libssl-dev openssl-devel	openssl		--with-openssl	Includes OpenSSL support	required

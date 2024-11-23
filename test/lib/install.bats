@@ -453,6 +453,7 @@ teardown() {
 			  gmp-devel             Includes GNU multiple precision support
 			  libicu-devel          Includes internationalization support with ICU
 			  libjpeg-turbo-devel   Includes JPEG support for image processing with GD
+			  openldap-devel        Includes LDAP support (and required by libcurl)
 			  oniguruma-devel       Enables use of mb_ereg* functions
 			  openssl-devel         Includes OpenSSL support
 			  libpng-devel          Includes PNG support for image processing with GD
@@ -465,7 +466,7 @@ teardown() {
 
 			Use DNF to install missing required packages:
 
-			  dnf install -y bzip2-devel libcurl-devel freetype-devel glibc-devel gmp-devel libicu-devel libjpeg-turbo-devel oniguruma-devel openssl-devel libpng-devel libedit-devel libsodium-devel libsqlite3x-devel libxml2-devel libzip-devel zlib-devel
+			  dnf install -y bzip2-devel libcurl-devel freetype-devel glibc-devel gmp-devel libicu-devel libjpeg-turbo-devel openldap-devel oniguruma-devel openssl-devel libpng-devel libedit-devel libsodium-devel libsqlite3x-devel libxml2-devel libzip-devel zlib-devel
 
 			asdf-php: Failed to install PHP; see the message above for details.
 		EOF
