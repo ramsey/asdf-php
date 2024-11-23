@@ -22,6 +22,7 @@ dnf_path=
 gcc_path=
 gxx_path=
 is_mac_os=no
+lib64_path="/lib64"
 log_file=
 make_path=
 
@@ -143,6 +144,7 @@ php_configure() {
 	add_option "--with-config-file-scan-dir=${install_path}/etc/php.d"
 	add_option "--disable-option-checking"
 
+	add_option_libdir
 	add_option_php_fpm
 
 	add_option "--enable-bcmath"
@@ -346,6 +348,15 @@ add_option_header() {
 		missing_required_package "$package_name" "$description"
 	else
 		missing_optional_package "$package_name" "$description"
+	fi
+}
+
+# Attempts to determine the location of the system libraries, and if they are
+# in a different location than standard (e.g., /usr/lib64), uses that location.
+add_option_libdir() {
+	# For now, we're only checking for /lib64. If it exists, we'll use it.
+	if [ -d "$lib64_path" ]; then
+		add_option "--with-libdir=lib64"
 	fi
 }
 
