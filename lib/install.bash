@@ -212,7 +212,7 @@ php_configure() {
 
 	log <<-EOF
 		Changing directory to ${download_path}
-		CC=${gcc_path} CXX="${gxx_path} ./configure ${configure_options[*]-}
+		CC=${gcc_path} CXX=${gxx_path} ./configure ${configure_options[*]-}
 	EOF
 
 	cd "$download_path"
