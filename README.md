@@ -4,20 +4,25 @@ A [PHP](https://www.php.net) plugin for the [asdf version manager](https://asdf-
 
 _Original version of this plugin created by [@Stratus3D](https://github.com/Stratus3D)_
 
-## Build History
-
-[![Build history](https://buildstats.info/github/chart/asdf-community/asdf-php?branch=master)](https://github.com/asdf-community/asdf-php/actions)
-
 ## Supported Versions of PHP
 
 - 8.1
 - 8.2
 - 8.3
+- 8.4
 
 ## Installing the Plugin
 
 ```bash
-asdf plugin add php https://github.com/asdf-community/asdf-php.git
+asdf plugin add php https://github.com/ramsey/asdf-php.git
+```
+
+## Updating the Plugins
+
+To get the latest changes to this plugin, use the following to update your local copy of the plugin to the latest commit on the default branch.
+
+```bash
+asdf plugin update php
 ```
 
 ## Installing a PHP Version
