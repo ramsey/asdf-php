@@ -342,6 +342,8 @@ teardown() {
 	declare -a missing_optional_packages__keys=()
 	declare -a configure_options=()
 
+	PKG_CONFIG_PATH="/usr/local:/usr"
+
 	expected_output=$(
 		cat <<-EOF
 			asdf-php: Configuring the build (this can take a while)...
@@ -387,6 +389,8 @@ teardown() {
 	declare -a missing_required_packages__keys=()
 	declare -a missing_optional_packages__keys=()
 	declare -a configure_options=()
+
+	PKG_CONFIG_PATH="/usr/local:/usr"
 
 	expected_output=$(
 		cat <<-EOF
@@ -516,6 +520,7 @@ teardown() {
 	apt_path="/path/to/apt-get"
 	brew_path=
 	dnf_path=
+	PKG_CONFIG_PATH="/usr/local:/usr"
 
 	expected_output=$(
 		cat <<-EOF
