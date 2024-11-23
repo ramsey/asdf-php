@@ -133,6 +133,7 @@ jobs:
             libicu-dev \
             libjpeg-dev \
             libkrb5-dev \
+            libldap2-dev \
             libonig-dev \
             libpng-dev \
             libpq-dev \
@@ -211,6 +212,7 @@ jobs:
             make \
             net-snmp-devel \
             oniguruma-devel \
+            openldap-devel \
             openssl-devel \
             pkg-config \
             re2c \
@@ -271,6 +273,7 @@ jobs:
             make \
             net-snmp \
             oniguruma \
+            openldap \
             openssl \
             pkg-config \
             re2c \
@@ -334,6 +337,7 @@ jobs:
             make \
             net-snmp \
             oniguruma \
+            openldap \
             openssl \
             pkg-config \
             re2c \
