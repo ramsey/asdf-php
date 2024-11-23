@@ -258,6 +258,7 @@ jobs:
             git \
             gmp \
             icu4c \
+            icu4c@74 \
             krb5 \
             libavif \
             libedit \
@@ -321,6 +322,7 @@ jobs:
             git \
             gmp \
             icu4c \
+            icu4c@74 \
             krb5 \
             libavif \
             libedit \

@@ -60,7 +60,7 @@ install_version() {
 			php_buildconf "$download_path" || exit 31
 		fi
 
-		php_configure "$download_path" "$install_path" || exit 41
+		php_configure "$download_path" "$install_path" "$version" || exit 41
 		php_make_install "$download_path" "$install_path" || exit 51
 		php_composer_install "$download_path" "$install_path" || exit 61
 
@@ -136,6 +136,7 @@ php_buildconf() {
 php_configure() {
 	local download_path="$1"
 	local install_path="$2"
+	local version="$3"
 
 	add_option "--prefix=${install_path}"
 	add_option "--with-layout=GNU"
@@ -185,6 +186,14 @@ php_configure() {
 		# Skip the header row
 		if [ "$name" = "common name" ]; then
 			continue
+		fi
+
+		# TODO: Clean this up with future versioning improvements
+		if [[ "$version" == 8.1.* && "$name" = "icu" ]]; then
+			# PHP 8.1 doesn't compile with newer ICU, so we need to use an older
+			# ICU. This is hard-coded for now but will move to the options.tsv
+			# data file when we support different configs based on version selected.
+			packages="icu4c@74 libicu-dev libicu-devel"
 		fi
 
 		if [ -n "$header" ]; then
