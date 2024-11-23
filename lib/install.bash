@@ -326,10 +326,8 @@ add_option_header() {
 		# provide a search prefix, since PHP is able to find them. If the search
 		# prefix is other than /usr or /usr/local, then we probably found them
 		# with Homebrew and should use the search prefix so PHP can find it.
-		if [[
-			("$option" == --with-iconv* || "$option" == --with-ldap*)
-			&& ("$header_location" = "/usr" || "$header_location" = "/usr/local")
-		]]; then
+		if [[ ("$option" == --with-iconv* || "$option" == --with-ldap*) &&
+			("$header_location" = "/usr" || "$header_location" = "/usr/local") ]]; then
 			add_option "${option//=/}"
 		elif [[ "$option" == *= ]]; then
 			add_option "${option}${header_location}"
