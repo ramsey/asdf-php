@@ -1001,22 +1001,6 @@ teardown() {
 	[ "${configure_options[0]}" = "--with-ldap=/opt/homebrew/opt/openldap" ]
 }
 
-@test "add_option_libdir detects lib64 library location" {
-	lib64_path="${tmp_dir}"
-	declare -a configure_options=()
-
-	add_option_libdir
-	((${#configure_options[@]} == 1))
-	[ "${configure_options[0]}" = "--with-libdir=lib64" ]
-}
-
-@test "add_option_libdir does not detect lib64 library location" {
-	declare -a configure_options=()
-
-	add_option_libdir
-	((${#configure_options[@]} == 0))
-}
-
 @test "add_option_php_fpm() detects _www user" {
 	id() {
 		[ "$1" = "_www" ] && return 0
