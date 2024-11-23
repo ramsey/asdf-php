@@ -103,6 +103,7 @@ jobs:
           - latest:8.1
           - latest:8.2
           - latest:8.3
+          - latest:8.4
     env:
       ASDF_PHP_VERBOSE: true
       DEBIAN_FRONTEND: noninteractive
@@ -170,6 +171,7 @@ jobs:
           - latest:8.1
           - latest:8.2
           - latest:8.3
+          - latest:8.4
     env:
       ASDF_PHP_VERBOSE: true
     container:
@@ -231,6 +233,7 @@ jobs:
           - latest:8.1
           - latest:8.2
           - latest:8.3
+          - latest:8.4
     env:
       ASDF_PHP_VERBOSE: true
     steps:
@@ -293,6 +296,7 @@ jobs:
           - latest:8.1
           - latest:8.2
           - latest:8.3
+          - latest:8.4
     env:
       ASDF_PHP_VERBOSE: true
       HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
