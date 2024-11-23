@@ -221,7 +221,7 @@ php_configure() {
 
 	log <<-EOF
 		Changing directory to ${download_path}
-		PKG_CONFIG_PATH=${PKG_CONFIG_PATH}
+		PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-}
 		CC=${gcc_path} CXX=${gxx_path} ./configure ${configure_options[*]-}
 	EOF
 
