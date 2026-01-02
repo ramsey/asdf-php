@@ -1,4 +1,5 @@
 #!/usr/bin/env bats
+# shellcheck disable=SC2317
 
 setup() {
 	bats_require_minimum_version 1.5.0
@@ -13,5 +14,7 @@ setup() {
 	}
 
 	run -0 list-bin-paths
-	assert_output "bin sbin .composer/vendor/bin"
+	assert_output "bin composer/vendor/bin"
+
+	unset -f list-bin-paths
 }

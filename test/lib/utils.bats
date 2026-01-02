@@ -6,6 +6,7 @@ setup() {
 
 	load '../test_helper/bats-support/load.bash'
 	load '../test_helper/bats-assert/load.bash'
+	load '../test_helper/bats-file/load.bash'
 
 	DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
 
@@ -142,7 +143,7 @@ setup() {
 	local tmp_dir
 	local log_file
 
-	tmp_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'tmp_dir')
+	tmp_dir="$(temp_make)"
 	log_file="${tmp_dir}/asdf-log-test.log"
 	truncate -s 0 "$log_file"
 
@@ -168,7 +169,7 @@ setup() {
 	EOF
 
 	if [ -d "$tmp_dir" ]; then
-		rm -rf "$tmp_dir"
+		temp_del "$tmp_dir"
 	fi
 }
 
@@ -177,7 +178,7 @@ setup() {
 	local log_file
 	export ASDF_PHP_VERBOSE="yes"
 
-	tmp_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'tmp_dir')
+	tmp_dir="$(temp_make)"
 	log_file="${tmp_dir}/asdf-log-test.log"
 	truncate -s 0 "$log_file"
 
@@ -203,7 +204,7 @@ setup() {
 	EOF
 
 	if [ -d "$tmp_dir" ]; then
-		rm -rf "$tmp_dir"
+		temp_del "$tmp_dir"
 	fi
 }
 
@@ -212,7 +213,7 @@ setup() {
 	local log_file
 	local file_contents
 
-	tmp_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'tmp_dir')
+	tmp_dir="$(temp_make)"
 	log_file="${tmp_dir}/asdf-log-test.log"
 	truncate -s 0 "$log_file"
 
@@ -241,7 +242,7 @@ setup() {
 	[ "$file_contents" = "This is another log message, Goodbye!" ]
 
 	if [ -d "$tmp_dir" ]; then
-		rm -rf "$tmp_dir"
+		temp_del "$tmp_dir"
 	fi
 }
 
@@ -270,8 +271,69 @@ setup() {
 }
 
 @test "sort_versions() sorts version numbers" {
-	versions_to_sort="$(cat "$DIR/../fixtures/stable_versions_unsorted.txt")"
-	expected_output="$(cat "$DIR/../fixtures/list_stable_versions.txt")"
-	sorted_versions="$(echo "$versions_to_sort" | sort_versions)"
+	versions_to_sort="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64-unsorted.txt")"
+	expected_output="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64.txt")"
+	sorted_versions="$(printf "%s" "$versions_to_sort" | sort_versions)"
 	[ "$sorted_versions" = "$expected_output" ]
+}
+
+@test "get_os() returns macos for Darwin" {
+	uname() {
+		if [[ "${*}" = "-s" ]]; then
+			printf "Darwin\n"
+		fi
+	}
+
+	run -0 get_os
+	assert_output "macos"
+}
+
+@test "get_os() returns linux for anything else" {
+	uname() {
+		if [[ "${*}" = "-s" ]]; then
+			printf "SomeOS\n"
+		fi
+	}
+
+	run -0 get_os
+	assert_output "linux"
+}
+
+@test "get_arch() returns aarch64 for arm64" {
+	uname() {
+		if [[ "${*}" = "-m" ]]; then
+			printf "arm64\n"
+		fi
+	}
+
+	run -0 get_arch
+	assert_output "aarch64"
+}
+
+@test "get_arch() returns aarch64 for aarch64" {
+	uname() {
+		if [[ "${*}" = "-m" ]]; then
+			printf "aarch64\n"
+		fi
+	}
+
+	run -0 get_arch
+	assert_output "aarch64"
+}
+
+@test "get_arch() returns x86_64 for anything else" {
+	# A mock for the uname command.
+	uname() {
+		if [[ "${*}" = "-m" ]]; then
+			printf "unknown\n"
+		fi
+	}
+
+	run -0 get_arch
+	assert_output "x86_64"
+}
+
+@test "tmp_file() creates a file" {
+	run -0 tmp_file
+	assert_file_exists "$output"
 }

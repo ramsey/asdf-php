@@ -7,8 +7,8 @@ set -euo pipefail
 # Adapted from https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
 #
 # Arguments:
-#   The path to use when downloading Composer.
-#   The installation path for the version of PHP associated with this Composer.
+#   download_path - The path to use when downloading Composer.
+#   install_path - The installation path for the version of PHP associated with this Composer.
 composer_download() {
 	local download_path="$1"
 	local install_path="$2"
@@ -36,8 +36,8 @@ composer_download() {
 # Installs Composer for a specific PHP installation.
 #
 # Arguments:
-#   The path where Composer was downloaded.
-#   The installation path for the version of PHP associated with this Composer.
+#   download_path - The path where Composer was downloaded.
+#   install_path - The installation path for the version of PHP associated with this Composer.
 composer_install() {
 	local download_path="$1"
 	local install_path="$2"

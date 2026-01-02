@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+# A mock PHP-FPM command.
+#
+
+if [[ "$1" = "--version" ]]; then
+	printf "%s\n" "$(
+		cat <<-'EOF'
+			PHP 8.x.x (fpm-fcgi) (built: Feb 28 2025 10:16:09) (NTS)
+			Copyright (c) The PHP Group
+			Zend Engine v4.x.x, Copyright (c) Zend Technologies
+		EOF
+	)"
+fi

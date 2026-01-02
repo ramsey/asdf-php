@@ -90,143 +90,9 @@ jobs:
           fail_ci_if_error: true
           file: coverage/coverage.xml
 
-  plugin-test-debian:
+  plugin-test-linux:
     needs: [coverage]
-    name: "Plugin test, Debian"
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        container:
-          - debian:11
-        php-version:
-          - latest:8.1
-          - latest:8.2
-          - latest:8.3
-          - latest:8.4
-    env:
-      ASDF_PHP_VERBOSE: true
-      DEBIAN_FRONTEND: noninteractive
-    container:
-      image: ${{ matrix.container }}
-    steps:
-      - name: Install dependencies
-        run: |
-          apt-get update
-          apt-get install -y \
-            autoconf \
-            bison \
-            curl \
-            g++ \
-            gcc \
-            git \
-            libargon2-dev \
-            libavif-dev \
-            libbz2-dev \
-            libcurl4-openssl-dev \
-            libedit-dev \
-            libenchant-2-dev \
-            libffi-dev \
-            libfreetype-dev \
-            libgdbm-dev \
-            libgmp-dev \
-            libicu-dev \
-            libjpeg-dev \
-            libkrb5-dev \
-            libldap2-dev \
-            libonig-dev \
-            libpng-dev \
-            libpq-dev \
-            libpspell-dev \
-            libsnmp-dev \
-            libsodium-dev \
-            libsqlite3-dev \
-            libssl-dev \
-            libtidy-dev \
-            libwebp-dev \
-            libxml2-dev \
-            libxpm-dev \
-            libxslt1-dev \
-            libzip-dev \
-            make \
-            pkg-config \
-            re2c \
-            unixodbc-dev \
-            zlib1g-dev
-      - name: Install and test version from plugin
-        uses: asdf-vm/actions/plugin-test@v3
-        with:
-          command: php --version
-          version: ${{ matrix.php-version }}
-
-  plugin-test-fedora:
-    needs: [coverage]
-    name: "Plugin test, Fedora"
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        container:
-          - fedora:39
-        php-version:
-          - latest:8.1
-          - latest:8.2
-          - latest:8.3
-          - latest:8.4
-    env:
-      ASDF_PHP_VERBOSE: true
-    container:
-      image: ${{ matrix.container }}
-    steps:
-      - name: Install dependencies
-        run: |
-          dnf install -y \
-            aspell-devel \
-            autoconf \
-            bison \
-            bzip2-devel \
-            enchant2-devel \
-            freetype-devel \
-            g++ \
-            gcc \
-            gdbm-devel \
-            git \
-            gmp-devel \
-            krb5-devel \
-            libargon2-devel \
-            libavif-devel \
-            libcurl-devel \
-            libedit-devel \
-            libicu-devel \
-            libjpeg-turbo-devel \
-            libpng-devel \
-            libpq-devel \
-            libsodium-devel \
-            libsqlite3x-devel \
-            libtidy-devel \
-            libwebp-devel \
-            libxml2-devel \
-            libXpm-devel \
-            libxslt-devel \
-            libzip-devel \
-            make \
-            net-snmp-devel \
-            oniguruma-devel \
-            openldap-devel \
-            openssl-devel \
-            pkg-config \
-            re2c \
-            unixODBC-devel \
-            zlib-devel
-      - name: Install and test version from plugin
-        uses: asdf-vm/actions/plugin-test@v3
-        with:
-          command: php --version
-          version: ${{ matrix.php-version }}
-
-  plugin-test-homebrew-ubuntu:
-    needs: [coverage]
-    name: "Plugin test, Homebrew on Ubuntu"
+    name: "Plugin test, Linux"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -239,59 +105,15 @@ jobs:
     env:
       ASDF_PHP_VERBOSE: true
     steps:
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Install dependencies
-        run: |
-          brew install --overwrite --quiet \
-            argon2 \
-            aspell \
-            autoconf \
-            bison \
-            bzip2 \
-            curl \
-            enchant \
-            freetype \
-            gcc@12 \
-            gdbm \
-            gettext \
-            git \
-            gmp \
-            icu4c \
-            icu4c@74 \
-            krb5 \
-            libavif \
-            libedit \
-            libffi \
-            libjpeg-turbo \
-            libpng \
-            libpq \
-            libsodium \
-            libxml2 \
-            libxpm \
-            libxslt \
-            libzip \
-            make \
-            net-snmp \
-            oniguruma \
-            openldap \
-            openssl \
-            pkg-config \
-            re2c \
-            sqlite3 \
-            tidy-html5 \
-            unixodbc \
-            webp \
-            zlib
       - name: Install and test version from plugin
         uses: asdf-vm/actions/plugin-test@v3
         with:
           command: php --version
           version: ${{ matrix.php-version }}
 
-  plugin-test-homebrew-macos:
+  plugin-test-macos:
     needs: [coverage]
-    name: "Plugin test, Homebrew on macOS"
+    name: "Plugin test, macOS"
     runs-on: macos-14
     strategy:
       fail-fast: false
@@ -303,51 +125,7 @@ jobs:
           - latest:8.4
     env:
       ASDF_PHP_VERBOSE: true
-      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: true
     steps:
-      - name: Install dependencies
-        run: |
-          brew install --overwrite --quiet \
-            argon2 \
-            aspell \
-            autoconf \
-            bison \
-            bzip2 \
-            curl \
-            enchant \
-            freetype \
-            gcc@12 \
-            gdbm \
-            gettext \
-            git \
-            gmp \
-            icu4c \
-            icu4c@74 \
-            krb5 \
-            libavif \
-            libedit \
-            libffi \
-            libiconv \
-            libjpeg-turbo \
-            libpng \
-            libpq \
-            libsodium \
-            libxml2 \
-            libxpm \
-            libxslt \
-            libzip \
-            make \
-            net-snmp \
-            oniguruma \
-            openldap \
-            openssl \
-            pkg-config \
-            re2c \
-            sqlite3 \
-            tidy-html5 \
-            unixodbc \
-            webp \
-            zlib
       - name: Install and test version from plugin
         uses: asdf-vm/actions/plugin-test@v3
         with:

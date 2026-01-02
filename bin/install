@@ -8,4 +8,4 @@ plugin_dir=$(realpath "$(dirname "$(dirname "$current_script_path")")")
 # shellcheck source=../lib/install.bash
 . "${plugin_dir}/lib/install.bash"
 
-install_version "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
+install_version "$ASDF_INSTALL_VERSION" "$ASDF_DOWNLOAD_PATH" "$ASDF_INSTALL_PATH"

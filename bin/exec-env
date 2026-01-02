@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
-# Set Composer's home directory if it's not set.
-if [ -z "${COMPOSER_HOME:-}" ]; then
-	export COMPOSER_HOME=$ASDF_INSTALL_PATH/.composer
+if [[ -z "${COMPOSER_HOME:-}" ]]; then
+	export COMPOSER_HOME="${ASDF_INSTALL_PATH}/composer"
+fi
+
+if [[ -z "${PHPRC:-}" ]]; then
+	export PHPRC="${ASDF_INSTALL_PATH}/etc/php/php.ini"
+fi
+
+if [[ -z "${PHP_INI_SCAN_DIR:-}" ]]; then
+	export PHP_INI_SCAN_DIR="${ASDF_INSTALL_PATH}/etc/php/conf.d"
 fi

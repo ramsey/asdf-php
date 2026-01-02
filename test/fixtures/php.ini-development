@@ -1,0 +1,11 @@
+[PHP]
+
+;;;;;;;;;;;;;;;;;;;
+; About php.ini   ;
+;;;;;;;;;;;;;;;;;;;
+; PHP's initialization file, generally called php.ini, is responsible for
+; configuring many of the aspects of PHP's behavior.
+
+; ...
+; This is the php.ini-development INI file.
+; ...

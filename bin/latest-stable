@@ -9,6 +9,6 @@ query="${1:-}"
 # shellcheck source=../lib/versions.bash
 . "${plugin_dir}/lib/versions.bash"
 
-version="$(list_stable_versions "$query" | tail -n1 | xargs echo)"
+version="$(list_versions "cli" "$(get_os)" "$(get_arch)" "$query" | tail -n1 | xargs printf "%s")"
 
-printf "%s\n" "$version"
+printf "%s" "$version"

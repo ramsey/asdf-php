@@ -12,21 +12,18 @@ setup() {
 
 	load '../../lib/composer.bash'
 
-	# Mock the cd command.
 	cd() {
-		[ "$1" = "/path/to/download" ] && return 0
+		[ "${*}" = "/path/to/download" ] && return 0
 		fail "The cd command received unexpected arguments: ${*}"
 	}
 
-	# Mock the rm command.
 	rm() {
-		[ "$1" = "composer-setup.php" ] && return 0
+		[ "${*}" = "composer-setup.php" ] && return 0
 		fail "The rm command received unexpected arguments: ${*}"
 	}
 
-	# Mock the cp command.
 	cp() {
-		[ "$1" = "composer.phar" ] && [ "$2" = "/path/to/install/bin/composer" ] && return 0
+		[ "${*}" = "composer.phar /path/to/install/bin/composer" ] && return 0
 		fail "The cp command received unexpected arguments: ${*}"
 	}
 }
@@ -39,15 +36,15 @@ teardown() {
 
 @test "composer_download() executes with success" {
 	/path/to/install/bin/php() {
-		if [ "$1" = "-r" ]; then
-			if [ "$2" = "copy('https://composer.github.io/installer.sig', 'php://stdout');" ] \
-				|| [ "$2" = "echo hash_file('sha384', 'composer-setup.php');" ]; then
-				printf "identical hash"
-				return 0
-			elif [ "$2" = "copy('https://getcomposer.org/installer', 'composer-setup.php');" ]; then
-				return 0
-			fi
-		elif [ "$1" = "composer-setup.php" ] && [ "$2" = "--quiet" ]; then
+		local expected1="-r copy('https://composer.github.io/installer.sig', 'php://stdout');"
+		local expected2="-r echo hash_file('sha384', 'composer-setup.php');"
+		local expected3="-r copy('https://getcomposer.org/installer', 'composer-setup.php');"
+		local expected4="composer-setup.php --quiet"
+
+		if [[ "${*}" = "$expected1" || "${*}" = "$expected2" ]]; then
+			printf "this is a hash to compare"
+			return 0
+		elif [[ "${*}" = "$expected3" || "${*}" = "$expected4" ]]; then
 			return 0
 		fi
 
@@ -55,20 +52,24 @@ teardown() {
 	}
 
 	composer_download "/path/to/download" "/path/to/install"
+
+	unset -f /path/to/install/bin/php
 }
 
 @test "composer_download() executes with failure" {
 	/path/to/install/bin/php() {
-		if [ "$1" = "-r" ]; then
-			if [ "$2" = "copy('https://composer.github.io/installer.sig', 'php://stdout');" ]; then
-				printf "different hash one"
-				return 0
-			elif [ "$2" = "echo hash_file('sha384', 'composer-setup.php');" ]; then
-				printf "different hash two"
-				return 0
-			elif [ "$2" = "copy('https://getcomposer.org/installer', 'composer-setup.php');" ]; then
-				return 0
-			fi
+		local expected1="-r copy('https://composer.github.io/installer.sig', 'php://stdout');"
+		local expected2="-r echo hash_file('sha384', 'composer-setup.php');"
+		local expected3="-r copy('https://getcomposer.org/installer', 'composer-setup.php');"
+
+		if [[ "${*}" = "$expected1" ]]; then
+			printf "this is a hash downloaded from installer.sig"
+			return 0
+		elif [[ "${*}" = "$expected2" ]]; then
+			printf "this is a different hash produced locally from composer-setup.php"
+			return 0
+		elif [[ "${*}" = "$expected3" ]]; then
+			return 0
 		fi
 
 		fail "The php command received unexpected arguments: ${*}"
@@ -76,6 +77,8 @@ teardown() {
 
 	run ! composer_download "/path/to/download" "/path/to/install"
 	assert_output "[ERROR] Invalid Composer installer checksum"
+
+	unset -f /path/to/install/bin/php
 }
 
 @test "composer_install() executes with success" {

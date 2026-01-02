@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 cat <<-EOF
-Git Repository: https://github.com/asdf-community/asdf-php
+Git Repository: https://github.com/ramsey/asdf-php
+Static PHP: https://static-php.dev
 EOF

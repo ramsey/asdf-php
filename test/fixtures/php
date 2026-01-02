@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+# A mock PHP command.
+#
+
+hash_string="A hash string for comparison"
+
+if [[ "$1" = "--version" ]]; then
+	printf "%s\n" "$(
+		cat <<-'EOF'
+			PHP 8.x.x (cli) (built: Feb 28 2025 10:16:09) (NTS)
+			Copyright (c) The PHP Group
+			Zend Engine v4.x.x, Copyright (c) Zend Technologies
+		EOF
+	)"
+fi
+
+if [[ "${*}" = "-r copy('https://composer.github.io/installer.sig', 'php://stdout');" ]]; then
+	printf "%s" "$hash_string"
+fi
+
+if [[ "${*}" = "-r copy('https://getcomposer.org/installer', 'composer-setup.php');" ]]; then
+	printf "" >"composer-setup.php"
+fi
+
+if [[ "${*}" = "-r echo hash_file('sha384', 'composer-setup.php');" ]]; then
+	printf "%s" "$hash_string"
+fi
+
+if [[ "${*}" =~ "bin/composer --version"$ ]]; then
+	printf "%s\n" "$(
+		cat <<-'EOF'
+			Composer version 2.x.x 2025-02-25 13:03:50
+		EOF
+	)"
+fi
