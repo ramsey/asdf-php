@@ -1,11 +1,12 @@
 name: Main workflow
 
 on:
-  pull_request:
   push:
-  workflow_dispatch:
-  schedule:
-    - cron: 0 0 * * 5
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
 
 # Cancels all previous workflow runs for the same branch that have not yet completed.
 concurrency:
