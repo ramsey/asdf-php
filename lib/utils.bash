@@ -148,7 +148,11 @@ sort_versions() {
 # Creates a temporary file in a POSIX-compatible way, for systems that don't have mktemp.
 tmp_file() (
 	set -o noclobber
+
+	set +o pipefail
 	tmp_name="${TMPDIR:-/tmp}/tmp.$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 10)"
+	set -o pipefail
+
 	umask 0177
 	printf "" >"$tmp_name" 2>/dev/null
 	printf "%s\n" "$tmp_name"
