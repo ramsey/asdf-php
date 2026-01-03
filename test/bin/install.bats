@@ -48,6 +48,10 @@ teardown() {
 			Copyright (c) The PHP Group
 			Zend Engine v4.x.x, Copyright (c) Zend Technologies
 
+			Loaded Configuration File:         /path/to/install/etc/php/php.ini
+			Scan for additional .ini files in: /path/to/install/etc/php/conf.d
+			Additional .ini files parsed:      (none)
+
 			Composer version 2.x.x 2025-02-25 13:03:50
 
 			asdf-php: PHP 8.4.16 installation was successful!

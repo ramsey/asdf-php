@@ -43,6 +43,15 @@ install_version() {
 			printf "\n" | asdf_log
 		fi
 
+		config_files=$(
+			PHPRC="$install_path/etc/php/php.ini" \
+				PHP_INI_SCAN_DIR="$install_path/etc/php/conf.d" \
+				"$install_path/bin/php" --ini | tail -n+2
+		)
+
+		printf "%s\n" "$config_files" | asdf_log
+		printf "\n" | asdf_log
+
 		"$install_path/bin/php" "$install_path/bin/composer" --version | asdf_log || exit 17
 		printf "\n" | asdf_log
 

@@ -15,6 +15,17 @@ if [[ "$1" = "--version" ]]; then
 	)"
 fi
 
+if [[ "$1" = "--ini" ]]; then
+	printf "%s\n" "$(
+		cat <<-'EOF'
+			Configuration File (php.ini) Path: /usr/local/etc/php
+			Loaded Configuration File:         /path/to/install/etc/php/php.ini
+			Scan for additional .ini files in: /path/to/install/etc/php/conf.d
+			Additional .ini files parsed:      (none)
+		EOF
+	)"
+fi
+
 if [[ "${*}" = "-r copy('https://composer.github.io/installer.sig', 'php://stdout');" ]]; then
 	printf "%s" "$hash_string"
 fi
