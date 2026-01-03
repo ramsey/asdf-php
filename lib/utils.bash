@@ -140,6 +140,37 @@ log() {
 	fi
 }
 
+# Parse the major, minor and patch versions of a semver string.
+#
+# Arguments:
+#   token - The semver string to parse.
+function parse_semver() {
+	local token="$1"
+	local major=0
+	local minor=0
+	local patch=0
+	local prerelease=0
+	local metadata=0
+
+	local regex="^([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z\.\-]+)?(\+[0-9A-Za-z\.\-]+)?$"
+
+	if [[ $token =~ $regex ]] ; then
+		major="${BASH_REMATCH[1]:-0}"
+		minor="${BASH_REMATCH[2]:-0}"
+		patch="${BASH_REMATCH[3]:-0}"
+
+		prerelease="${BASH_REMATCH[4]:-0}"
+		prerelease="${prerelease#-}"
+
+		metadata="${BASH_REMATCH[5]:-0}"
+		metadata="${metadata#+}"
+	else
+		return 1
+	fi
+
+	printf "%s %s %s %s %s" "$major" "$minor" "$patch" "$prerelease" "$metadata"
+}
+
 # Sorts and returns a list of software version numbers.
 #
 # Arguments:
