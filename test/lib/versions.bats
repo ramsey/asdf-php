@@ -14,7 +14,28 @@ setup() {
 	static_php_json="$(cat "$DIR"/../fixtures/static-php-cli-bulk.json)"
 
 	curl() {
-		[[ -f "$3" ]] || "Expected a file to exist at $3"
+		# shellcheck disable=SC2154
+		if [[ "$1" != "${curl_opts[*]}" ]]; then
+			printf "Expected %s, but got %s\n" "${curl_opts[*]}" "$1"
+			return 1
+		fi
+
+		if [[ "$2" != "-o" ]]; then
+			printf "Expected -o, but got %s\n" "$2"
+			return 1
+		fi
+
+		if [[ ! -f "$3" ]]; then
+			printf "Expected a file to exist at %s\n" "$3"
+			return 1
+		fi
+
+		# shellcheck disable=SC2154
+		if [[ "$4" != "$static_php_bulk_list" ]]; then
+			printf "Expected %s, but got %s\n" "$static_php_bulk_list" "$4"
+			return 1
+		fi
+
 		printf "%s\n" "$static_php_json" >"$3"
 	}
 }
