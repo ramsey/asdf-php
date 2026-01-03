@@ -60,6 +60,10 @@ jobs:
       - name: Install bats-core (on macOS)
         if: ${{ matrix.os == 'macos-latest' }}
         run: brew install bats-core
+      - name: Check what bash version is installed
+        run: |
+          command -V bash
+          bash --version
       - name: Run tests
         run: make test
 
