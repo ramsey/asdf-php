@@ -95,14 +95,18 @@ jobs:
           fail_ci_if_error: true
           file: coverage/coverage.xml
 
-  plugin-test-linux:
+  plugin-test:
     needs: [coverage]
-    name: "Plugin test, Linux"
-    runs-on: ubuntu-latest
+    name: "Plugin test"
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
         php-version:
+          - latest:8.0
           - latest:8.1
           - latest:8.2
           - latest:8.3
@@ -111,28 +115,7 @@ jobs:
       ASDF_PHP_VERBOSE: true
     steps:
       - name: Install and test version from plugin
-        uses: asdf-vm/actions/plugin-test@v3
-        with:
-          command: php --version
-          version: ${{ matrix.php-version }}
-
-  plugin-test-macos:
-    needs: [coverage]
-    name: "Plugin test, macOS"
-    runs-on: macos-14
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version:
-          - latest:8.1
-          - latest:8.2
-          - latest:8.3
-          - latest:8.4
-    env:
-      ASDF_PHP_VERBOSE: true
-    steps:
-      - name: Install and test version from plugin
-        uses: asdf-vm/actions/plugin-test@v3
+        uses: asdf-vm/actions/plugin-test@v4
         with:
           command: php --version
           version: ${{ matrix.php-version }}
