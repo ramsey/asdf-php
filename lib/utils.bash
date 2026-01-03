@@ -150,7 +150,8 @@ tmp_file() (
 	set -o noclobber
 
 	set +o pipefail
-	tmp_name="${TMPDIR:-/tmp}/tmp.$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom | head -c 10)"
+	random_str=$(LC_ALL=C tr -dc 'a-zA-Z0-9' </dev/urandom 2>/dev/null | head -c 10 || true)
+	tmp_name="${TMPDIR:-/tmp}/tmp.${random_str}"
 	set -o pipefail
 
 	umask 0177
