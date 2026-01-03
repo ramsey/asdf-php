@@ -53,11 +53,12 @@ download_static_php() {
 	download_file="${download_path}/php-${version}-${sapi}-${os}-${arch}.tar.gz"
 
 	local url
-	url="${static_php_bulk_prefix}/php-${version}-${sapi}-${os}-${arch}.tar.gz"
+	url="${STATIC_PHP_BULK_PREFIX}/php-${version}-${sapi}-${os}-${arch}.tar.gz"
 
-	asdf_info "Downloading ${tool_name} version ${version} (${sapi}, ${os}, ${arch})..."
+	asdf_info "Downloading PHP version ${version} (${sapi}, ${os}, ${arch})..."
 
-	curl "${curl_opts[@]}" -o "$download_file" -C - "$url" || asdf_fail "Could not download $url"
+	curl "${CURL_OPTS[@]}" -o "$download_file" -C - "$url" \
+		|| asdf_fail "Could not download $url"
 
 	unpack_download "$download_file" "$download_path"
 }
@@ -72,7 +73,8 @@ unpack_download() {
 	local download_path="$2"
 
 	#  Extract contents of tar.gz file into the download directory
-	tar -xzf "$download_file" -C "$download_path" >/dev/null 2>&1 || asdf_fail "Could not extract $download_file"
+	tar -xzf "$download_file" -C "$download_path" >/dev/null 2>&1 \
+		|| asdf_fail "Could not extract $download_file"
 
 	# Remove the tar.gz file since we don't need to keep it
 	rm "$download_file"
@@ -95,7 +97,8 @@ download_php_ini() {
 	download_file="${download_path}/php.ini-${variant}"
 
 	local url
-	url="${git_php_tag_raw_prefix}${version}/php.ini-${variant}"
+	url="${GIT_PHP_TAG_RAW_PREFIX}${version}/php.ini-${variant}"
 
-	curl "${curl_opts[@]}" -o "$download_file" -C - "$url" || asdf_fail "Could not download $url"
+	curl "${CURL_OPTS[@]}" -o "$download_file" -C - "$url" \
+		|| asdf_fail "Could not download $url"
 }

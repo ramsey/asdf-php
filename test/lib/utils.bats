@@ -1,6 +1,9 @@
 #!/usr/bin/env bats
 # shellcheck disable=SC2317
 
+ASDF_PHP_LOG_FILE=
+ASDF_PHP_VERBOSE=
+
 setup() {
 	bats_require_minimum_version 1.5.0
 
@@ -13,6 +16,17 @@ setup() {
 	load '../../lib/utils.bash'
 }
 
+# executed after each test
+teardown() {
+	if [[ -n "${ASDF_PHP_LOG_FILE:-}" ]]; then
+		unset -v ASDF_PHP_LOG_FILE
+	fi
+
+	if [[ -n "${ASDF_PHP_VERBOSE:-}" ]]; then
+		unset -v ASDF_PHP_VERBOSE
+	fi
+}
+
 @test "asdf_log() uses first argument to log a message" {
 	log() {
 		local input
@@ -22,7 +36,10 @@ setup() {
 			log="${log:+${log}, }${input}"
 		done
 
-		[ "$1" = "yes" ] && [ "$log" = "A log message" ] && return 0
+		[ "$1" = "yes" ] \
+			&& [ "$log" = "A log message" ] \
+			&& return 0
+
 		fail "The log command received unexpected arguments: ${*}"
 	}
 
@@ -61,7 +78,10 @@ setup() {
 			log3="${log3:+${log3}, }${input}"
 		done
 
-		[ "$1" = "yes" ] && [ "$log3" = "" ] && return 0
+		[ "$1" = "yes" ] \
+			&& [ "$log3" = "" ] \
+			&& return 0
+
 		fail "The log command received unexpected arguments: ${*}"
 	}
 
@@ -141,11 +161,10 @@ setup() {
 
 @test "log() uses tee to log to a file and stdout" {
 	local tmp_dir
-	local log_file
 
 	tmp_dir="$(temp_make)"
-	log_file="${tmp_dir}/asdf-log-test.log"
-	truncate -s 0 "$log_file"
+	ASDF_PHP_LOG_FILE="${tmp_dir}/asdf-log-test.log"
+	truncate -s 0 "$ASDF_PHP_LOG_FILE"
 
 	tee() {
 		local input
@@ -155,7 +174,11 @@ setup() {
 			message="${message:+${message}, }${input}"
 		done
 
-		[ "$1" = "-a" ] && [ "$2" = "$log_file" ] && [ "$message" = "This is my log message, Hello, world!" ] && return 0
+		[ "$1" = "-a" ] \
+			&& [ "$2" = "$ASDF_PHP_LOG_FILE" ] \
+			&& [ "$message" = "This is my log message, Hello, world!" ] \
+			&& return 0
+
 		fail "The tee command received unexpected arguments: ${*}"
 	}
 
@@ -175,12 +198,11 @@ setup() {
 
 @test "log() uses the value of the ASDF_PHP_VERBOSE environment variable" {
 	local tmp_dir
-	local log_file
-	export ASDF_PHP_VERBOSE="yes"
+	ASDF_PHP_VERBOSE="yes"
 
 	tmp_dir="$(temp_make)"
-	log_file="${tmp_dir}/asdf-log-test.log"
-	truncate -s 0 "$log_file"
+	ASDF_PHP_LOG_FILE="${tmp_dir}/asdf-log-test.log"
+	truncate -s 0 "$ASDF_PHP_LOG_FILE"
 
 	tee() {
 		local input
@@ -190,7 +212,11 @@ setup() {
 			message2="${message2:+${message2}, }${input}"
 		done
 
-		[ "$1" = "-a" ] && [ "$2" = "$log_file" ] && [ "$message2" = "This is my log message" ] && return 0
+		[ "$1" = "-a" ] \
+			&& [ "$2" = "$ASDF_PHP_LOG_FILE" ] \
+			&& [ "$message2" = "This is my log message" ] \
+			&& return 0
+
 		fail "The tee command received unexpected arguments: ${*}"
 	}
 
@@ -210,12 +236,11 @@ setup() {
 
 @test "log() uses cat to log to a file and NOT stdout" {
 	local tmp_dir
-	local log_file
 	local file_contents
 
 	tmp_dir="$(temp_make)"
-	log_file="${tmp_dir}/asdf-log-test.log"
-	truncate -s 0 "$log_file"
+	ASDF_PHP_LOG_FILE="${tmp_dir}/asdf-log-test.log"
+	truncate -s 0 "$ASDF_PHP_LOG_FILE"
 
 	tee() {
 		fail "The tee command was not expected in this context"
@@ -229,7 +254,10 @@ setup() {
 			msg="${msg:+${msg}, }${input}"
 		done
 
-		[ "$msg" = "This is another log message, Goodbye!" ] && printf "%s\n" "$msg" && return 0
+		[ "$msg" = "This is another log message, Goodbye!" ] \
+			&& printf "%s\n" "$msg" \
+			&& return 0
+
 		fail "The cat command received unexpected arguments: ${*}"
 	}
 
@@ -238,15 +266,11 @@ setup() {
 		Goodbye!
 	EOF
 
-	while IFS= read -r line; do file_contents="$line"; done <"$log_file"
+	while IFS= read -r line; do file_contents="$line"; done <"$ASDF_PHP_LOG_FILE"
 	[ "$file_contents" = "This is another log message, Goodbye!" ]
-
-	if [ -d "$tmp_dir" ]; then
-		temp_del "$tmp_dir"
-	fi
 }
 
-@test "log() always logs to stdout if log_file is empty" {
+@test "log() always logs to stdout if ASDF_PHP_LOG_FILE is not set" {
 	expected_output=$(
 		cat <<-EOF
 			This is another log message
@@ -274,6 +298,7 @@ setup() {
 	versions_to_sort="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64-unsorted.txt")"
 	expected_output="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64.txt")"
 	sorted_versions="$(printf "%s" "$versions_to_sort" | sort_versions)"
+
 	[ "$sorted_versions" = "$expected_output" ]
 }
 

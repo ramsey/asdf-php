@@ -15,8 +15,8 @@ setup() {
 
 	curl() {
 		# shellcheck disable=SC2154
-		if [[ "$1" != "${curl_opts[*]}" ]]; then
-			printf "Expected %s, but got %s\n" "${curl_opts[*]}" "$1"
+		if [[ "$1" != "${CURL_OPTS[*]}" ]]; then
+			printf "Expected %s, but got %s\n" "${CURL_OPTS[*]}" "$1"
 			return 1
 		fi
 
@@ -31,8 +31,8 @@ setup() {
 		fi
 
 		# shellcheck disable=SC2154
-		if [[ "$4" != "$static_php_bulk_list" ]]; then
-			printf "Expected %s, but got %s\n" "$static_php_bulk_list" "$4"
+		if [[ "$4" != "$STATIC_PHP_BULK_LIST" ]]; then
+			printf "Expected %s, but got %s\n" "$STATIC_PHP_BULK_LIST" "$4"
 			return 1
 		fi
 

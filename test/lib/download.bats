@@ -225,7 +225,7 @@ setup() {
 		EOF
 	)
 
-	export ASDF_PHP_FPM=yes
+	ASDF_PHP_FPM=yes
 
 	run download_release 8.3.0 /path/to/download test_os test_arch
 	assert_output "$expected_output"

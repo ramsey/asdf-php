@@ -29,8 +29,8 @@ list_versions() {
 	local tmp_name
 	tmp_name=$(tmp_file)
 
-	curl ${curl_opts[@]+"${curl_opts[@]}"} -o "$tmp_name" "$static_php_bulk_list" \
-		|| asdf_fail "Could not download $static_php_bulk_list"
+	curl ${CURL_OPTS[@]+"${CURL_OPTS[@]}"} -o "$tmp_name" "$STATIC_PHP_BULK_LIST" \
+		|| asdf_fail "Could not download $STATIC_PHP_BULK_LIST"
 
 	awk <"$tmp_name" -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/name\042/){ val=$(i+1); gsub(/"/, "", val); print val }}}' \
 		| grep -o -E "php\-${major}\.${minor}\.${patch}\-${sapi}\-${os}\-${arch}\.tar\.gz" \

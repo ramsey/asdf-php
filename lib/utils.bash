@@ -2,11 +2,16 @@
 
 set -euo pipefail
 
-export tool_name="PHP"
-export static_php_bulk_prefix="https://dl.static-php.dev/static-php-cli/bulk"
-export static_php_bulk_list="${static_php_bulk_prefix}/?format=json"
-export git_php_tag_raw_prefix="https://github.com/php/php-src/raw/refs/tags/php-"
-export curl_opts=(-fsSL)
+STATIC_PHP_BULK_PREFIX="https://dl.static-php.dev/static-php-cli/bulk"
+
+# shellcheck disable=SC2034
+STATIC_PHP_BULK_LIST="${STATIC_PHP_BULK_PREFIX}/?format=json"
+
+# shellcheck disable=SC2034
+GIT_PHP_TAG_RAW_PREFIX="https://github.com/php/php-src/raw/refs/tags/php-"
+
+# shellcheck disable=SC2034
+CURL_OPTS=(-fsSL)
 
 # Appends a message to the log.
 #
@@ -35,7 +40,7 @@ asdf_log() {
 # Arguments:
 #   message - The message to print.
 asdf_info() {
-	printf "asdf-%s: %s\n" "$(printf "%s" "$tool_name" | tr '[:upper:]' '[:lower:]')" "${1:-}" | asdf_log
+	printf "asdf-php: %s\n" "${1:-}" | asdf_log
 }
 
 # Prints a failure message and exits with an error status.
@@ -98,9 +103,9 @@ is_truthy() (
 
 # Piping data to this command logs it to a file and, optionally, to stdout
 #
-# This function relies on a global log_file value. If log_file is not set, this
-# function will always print to stdout, regardless of the value passed as the
-# first argument.
+# This function relies on the ASDF_PHP_LOG_FILE environment variable. If
+# ASDF_PHP_LOG_FILE is not set, this function will always print to stdout,
+# regardless of the value passed as the first argument.
 #
 # If the ASDF_PHP_VERBOSE environment variable is set, then it will override any
 # argument passed to this function.
@@ -120,7 +125,7 @@ log() {
 	fi
 
 	# If no log file is defined, or it does not exist, always write to stdout.
-	if [[ -z "${log_file:-}" || ! -f "$log_file" ]]; then
+	if [[ -z "${ASDF_PHP_LOG_FILE:-}" || ! -f "$ASDF_PHP_LOG_FILE" ]]; then
 		while IFS= read -r input; do
 			printf "%s\n" "$input"
 		done
@@ -129,9 +134,9 @@ log() {
 	fi
 
 	if is_truthy "$to_stdout"; then
-		tee -a "$log_file"
+		tee -a "$ASDF_PHP_LOG_FILE"
 	else
-		cat >>"$log_file"
+		cat >>"$ASDF_PHP_LOG_FILE"
 	fi
 }
 

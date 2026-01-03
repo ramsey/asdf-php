@@ -55,13 +55,13 @@ install_version() {
 		"$install_path/bin/php" "$install_path/bin/composer" --version | asdf_log || exit 17
 		printf "\n" | asdf_log
 
-		asdf_info "$tool_name $version installation was successful!"
+		asdf_info "PHP $version installation was successful!"
 	) || (
 		local status=$?
 		if [ -d "$install_path" ]; then
 			rm -rf "$install_path"
 		fi
-		asdf_fail "An error occurred while installing $tool_name $version." "$status"
+		asdf_fail "An error occurred while installing PHP $version." "$status"
 	)
 }
 
@@ -79,7 +79,7 @@ php_install() {
 
 	cd "$download_path"
 
-	asdf_info "Installing $tool_name to $install_path"
+	asdf_info "Installing PHP to $install_path"
 
 	test -d "$download_path" || asdf_fail "Download directory ${download_path} does not exist."
 	test -d "$install_path" || asdf_fail "Installation directory ${install_path} does not exist."
