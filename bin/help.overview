@@ -1,13 +1,28 @@
 #!/usr/bin/env bash
 
-version="${ASDF_INSTALL_VERSION:-}"
+current_script_path=$(realpath "${BASH_SOURCE[0]}")
+plugin_dir=$(realpath "$(dirname "$(dirname "$current_script_path")")")
+
+# shellcheck source=../lib/utils.bash
+. "${plugin_dir}/lib/utils.bash"
+
+version="<version>"
+minor_version="<version>"
+
+if [[ -n "${ASDF_INSTALL_VERSION:-}" ]]; then
+	IFS=" " read -r -a semver <<< "$(parse_semver "${ASDF_INSTALL_VERSION}")"
+	version="${ASDF_INSTALL_VERSION}"
+	minor_version="${semver[0]}.${semver[1]}"
+fi
 
 cat <<-EOF
 Basic usage:
 
   asdf list all php
-  asdf install php $version
-  asdf global php $version
+  asdf latest php
+  asdf install php ${version}
+  asdf install php latest
+  asdf install php latest:${minor_version}
 
   php --version
   composer --version

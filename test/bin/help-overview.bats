@@ -19,14 +19,26 @@ teardown() {
 
 @test "help.overview" {
 	run -0 help-overview
-	assert_line '  asdf install php '
+	assert_line '  asdf install php <version>'
+	assert_line '  asdf install php latest:<version>'
 }
 
 @test "help.overview with ASDF_INSTALL_VERSION" {
-	export ASDF_INSTALL_VERSION='8.3.2'
+	ASDF_INSTALL_VERSION='8.4.16'
 
 	run -0 help-overview
-	assert_line '  asdf install php 8.3.2'
+	assert_line '  asdf install php 8.4.16'
+	assert_line '  asdf install php latest:8.4'
+
+	unset -v ASDF_INSTALL_VERSION
+}
+
+@test "help.overview with ASDF_INSTALL_VERSION and complex version string" {
+	ASDF_INSTALL_VERSION='8.5.1-alpha1+ext-memcached'
+
+	run -0 help-overview
+	assert_line '  asdf install php 8.5.1-alpha1+ext-memcached'
+	assert_line '  asdf install php latest:8.5'
 
 	unset -v ASDF_INSTALL_VERSION
 }
