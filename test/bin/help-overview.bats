@@ -24,6 +24,7 @@ teardown() {
 }
 
 @test "help.overview with ASDF_INSTALL_VERSION" {
+	# shellcheck disable=SC2034
 	ASDF_INSTALL_VERSION='8.4.16'
 
 	run -0 help-overview
@@ -34,6 +35,7 @@ teardown() {
 }
 
 @test "help.overview with ASDF_INSTALL_VERSION and complex version string" {
+	# shellcheck disable=SC2034
 	ASDF_INSTALL_VERSION='8.5.1-alpha1+ext-memcached'
 
 	run -0 help-overview

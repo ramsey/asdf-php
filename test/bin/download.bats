@@ -9,12 +9,17 @@ setup() {
 
 	DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
 
+	# shellcheck disable=SC2034
 	ASDF_DOWNLOAD_PATH="$(temp_make)"
 
-	export ASDF_DOWNLOAD_PATH
-	export ASDF_INSTALL_VERSION="8.1.34"
-	export ASDF_PHP_OS="linux"
-	export ASDF_PHP_ARCH="x86_64"
+	# shellcheck disable=SC2034
+	ASDF_INSTALL_VERSION="8.1.34"
+
+	# shellcheck disable=SC2034
+	ASDF_PHP_OS="linux"
+
+	# shellcheck disable=SC2034
+	ASDF_PHP_ARCH="x86_64"
 }
 
 teardown() {

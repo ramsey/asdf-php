@@ -5,7 +5,8 @@
 		load '../../bin/exec-env'
 	}
 
-	export ASDF_INSTALL_PATH="/path/to/install"
+	# shellcheck disable=SC2034
+	ASDF_INSTALL_PATH="/path/to/install"
 
 	[ -z "${COMPOSER_HOME:-}" ]
 	[ -z "${PHPRC:-}" ]
@@ -32,10 +33,12 @@
 		load '../../bin/exec-env'
 	}
 
+	# shellcheck disable=SC2034
 	ASDF_INSTALL_PATH="/path/to/install"
-	export COMPOSER_HOME="/path/to/composer"
-	export PHPRC="/path/to/php.ini"
-	export PHP_INI_SCAN_DIR="/path/to/php/conf.d"
+
+	COMPOSER_HOME="/path/to/composer"
+	PHPRC="/path/to/php.ini"
+	PHP_INI_SCAN_DIR="/path/to/php/conf.d"
 
 	exec-env
 

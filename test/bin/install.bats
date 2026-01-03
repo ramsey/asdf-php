@@ -9,14 +9,20 @@ setup() {
 
 	DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
 
+	# shellcheck disable=SC2034
 	ASDF_DOWNLOAD_PATH="$(temp_make)"
+
+	# shellcheck disable=SC2034
 	ASDF_INSTALL_PATH="$(temp_make)"
 
-	export ASDF_DOWNLOAD_PATH
-	export ASDF_INSTALL_PATH
-	export ASDF_INSTALL_VERSION="8.4.16"
-	export ASDF_PHP_OS="linux"
-	export ASDF_PHP_ARCH="x86_64"
+	# shellcheck disable=SC2034
+	ASDF_INSTALL_VERSION="8.4.16"
+
+	# shellcheck disable=SC2034
+	ASDF_PHP_OS="linux"
+
+	# shellcheck disable=SC2034
+	ASDF_PHP_ARCH="x86_64"
 
 	cp "$DIR/../fixtures/php" "$ASDF_DOWNLOAD_PATH/php"
 	cp "$DIR/../fixtures/php.ini-development" "$ASDF_DOWNLOAD_PATH/php.ini-development"

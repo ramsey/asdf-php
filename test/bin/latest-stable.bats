@@ -9,8 +9,11 @@ setup() {
 
 	DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
 
-	export ASDF_PHP_OS="linux"
-	export ASDF_PHP_ARCH="x86_64"
+	# shellcheck disable=SC2034
+	ASDF_PHP_OS="linux"
+
+	# shellcheck disable=SC2034
+	ASDF_PHP_ARCH="x86_64"
 
 	static_php_json="$(cat "$DIR"/../fixtures/static-php-cli-bulk.json)"
 

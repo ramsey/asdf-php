@@ -154,7 +154,7 @@ function parse_semver() {
 
 	local regex="^([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z\.\-]+)?(\+[0-9A-Za-z\.\-]+)?$"
 
-	if [[ $token =~ $regex ]] ; then
+	if [[ $token =~ $regex ]]; then
 		major="${BASH_REMATCH[1]:-0}"
 		minor="${BASH_REMATCH[2]:-0}"
 		patch="${BASH_REMATCH[3]:-0}"

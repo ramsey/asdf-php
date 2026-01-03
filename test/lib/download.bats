@@ -225,6 +225,7 @@ setup() {
 		EOF
 	)
 
+	# shellcheck disable=SC2034
 	ASDF_PHP_FPM=yes
 
 	run download_release 8.3.0 /path/to/download test_os test_arch
