@@ -31,7 +31,7 @@ list_versions() {
 
 	curl "${curl_opts[@]}" -o "$tmp_name" "$static_php_bulk_list" || asdf_fail "Could not download $static_php_bulk_list"
 
-	<"$tmp_name" awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/name\042/){print $(i+1)}}}' \
+	awk <"$tmp_name" -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/name\042/){print $(i+1)}}}' \
 		| tr -d '"' \
 		| grep -o -E "php\-${major}\.${minor}\.${patch}\-${sapi}\-${os}\-${arch}\.tar\.gz" \
 		| sed 's/php-//' \
