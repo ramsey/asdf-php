@@ -120,8 +120,9 @@ setup() {
 	run -1 parse_semver "not-a-semver"
 }
 
-@test "parse_semver() fails with 2.3.4abc" {
-	run -1 parse_semver "2.3.4abc"
+@test "parse_semver() succeeds with 2.3.4abc and treats 'abc' as a pre-release version" {
+	run -0 parse_semver "2.3.4abc"
+	assert_output "2|3|4|abc||"
 }
 
 @test "parse_semver() fails with a1.2.3" {
@@ -201,6 +202,16 @@ setup() {
 @test "parse_semver() succeeds with 1+info" {
 	run -0 parse_semver "1+info"
 	assert_output "1||||info|"
+}
+
+@test "parse_semver() succeeds with 8.5.0alpha1" {
+	run -0 parse_semver "8.5.0alpha1"
+	assert_output "8|5|0|alpha1||"
+}
+
+@test "parse_semver() succeeds with 8.5.0alpha1-1+build1" {
+	run -0 parse_semver "8.5.0alpha1-1+build1"
+	assert_output "8|5|0|alpha1-1|build1|"
 }
 
 @test "sort_versions() sorts version numbers" {
