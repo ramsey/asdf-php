@@ -21,7 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+      - name: Install asdf and tools
+        uses: asdf-vm/actions/install@v4
       - name: Run shellcheck
         run: make lint
 
@@ -30,12 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Install shfmt
-        run: |
-          curl -fsSL -o shfmt -C - https://github.com/mvdan/sh/releases/download/v3.7.0/shfmt_v3.7.0_linux_amd64
-          chmod +x shfmt
-          sudo mv shfmt /usr/local/bin/shfmt
+        uses: actions/checkout@v6
+      - name: Install asdf and tools
+        uses: asdf-vm/actions/install@v4
       - name: Run shfmt
         run: make fmt-check
 
@@ -49,21 +48,11 @@ jobs:
           - macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
-      - name: Install bats-core (on Ubuntu)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          git clone https://github.com/bats-core/bats-core.git
-          sudo ./bats-core/install.sh /usr/local
-      - name: Install bats-core (on macOS)
-        if: ${{ matrix.os == 'macos-latest' }}
-        run: brew install bats-core
-      - name: Check what bash version is installed
-        run: |
-          command -V bash
-          bash --version
+      - name: Install asdf and tools
+        uses: asdf-vm/actions/install@v4
       - name: Run tests
         run: make test
 
@@ -73,26 +62,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
+      - name: Install asdf and tools
+        uses: asdf-vm/actions/install@v4
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.0.2"
+          ruby-version: "3.4.2"
       - name: Install dependencies
         run: |
           bundle update --bundler
           bundle install
-          git clone https://github.com/bats-core/bats-core.git
-          sudo ./bats-core/install.sh /usr/local
       - name: Run tests with coverage reporting
         run: make coverage
       - name: Upload reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
           file: coverage/coverage.xml
 
   plugin-test:

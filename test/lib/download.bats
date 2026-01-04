@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# shellcheck disable=SC2317
+# shellcheck disable=SC2329
 
 setup() {
 	bats_require_minimum_version 1.5.0

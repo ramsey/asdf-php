@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# shellcheck disable=SC2317
+# shellcheck disable=SC2329
 
 ASDF_PHP_LOG_FILE=
 ASDF_PHP_VERBOSE=
@@ -271,6 +271,7 @@ teardown() {
 
 @test "log() always logs to stdout if ASDF_PHP_LOG_FILE is not set" {
 	expected_output=$(
+		# shellcheck disable=SC2218
 		cat <<-EOF
 			This is another log message
 			Goodbye!
