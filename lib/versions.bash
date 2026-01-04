@@ -64,6 +64,40 @@ list_versions() {
 		| sort_versions
 }
 
+# Attempts to find and return a compatible version string for the given version input.
+#
+# Arguments:
+#   sapi - The PHP SAPI to get the normalized version for.
+#   os - The operating system to get the normalized version for.
+#   arch - The system architecture to get the normalized version for.
+#   version - The version string to normalize.
+normalize_version() {
+	local sapi="$1"
+	local os="$2"
+	local arch="$3"
+	local version_input="$4"
+
+	local version=""
+
+	if [[ "$version_input" = "latest" ]]; then
+		version="$(latest_stable_version "$sapi" "$os" "$arch")"
+	elif [[ "$version_input" =~ ^latest: ]]; then
+		version="$(latest_stable_version "$sapi" "$os" "$arch" "${version_input:7}")"
+	else
+		# If it's a valid version number, pass it to latest_stable_version(),
+		# in case it's a partial version number.
+		if [[ -n "$(parse_semver "$version_input")" ]]; then
+			version="$(latest_stable_version "$sapi" "$os" "$arch" "$version_input")"
+		fi
+	fi
+
+	if [[ -z "$version" ]]; then
+		return 1
+	fi
+
+	printf "%s" "$version"
+}
+
 # Parse the major, minor and patch versions of a semver string.
 #
 # The returned value is a pipe-delimited string, which may be parsed into an array with:

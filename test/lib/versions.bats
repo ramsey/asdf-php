@@ -210,3 +210,31 @@ setup() {
 
 	[ "$sorted_versions" = "$expected_output" ]
 }
+
+@test "normalize_version() fails for invalid.version.string" {
+	run -1 normalize_version "cli" "macos" "aarch64" "invalid.version.string"
+}
+
+@test "normalize_version() returns latest stable version" {
+	run -0 normalize_version "cli" "macos" "aarch64" "latest"
+	assert_output "8.4.16"
+}
+
+@test "normalize_version() returns latest 8.1 version" {
+	run -0 normalize_version "cli" "macos" "aarch64" "latest:8.1"
+	assert_output "8.1.34"
+}
+
+@test "normalize_version() validates version string and returns it" {
+	run -0 normalize_version "cli" "macos" "aarch64" "8.1.34"
+	assert_output "8.1.34"
+}
+
+@test "normalize_version() treats partial version string as request for latest" {
+	run -0 normalize_version "cli" "macos" "aarch64" "8.0"
+	assert_output "8.0.30"
+}
+
+@test "normalize_version() fails for non-existent version" {
+	run -1 normalize_version "cli" "macos" "aarch64" "8.0.31"
+}
