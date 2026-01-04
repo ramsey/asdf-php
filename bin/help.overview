@@ -1,33 +1,26 @@
 #!/usr/bin/env bash
 
-current_script_path=$(realpath "${BASH_SOURCE[0]}")
-plugin_dir=$(realpath "$(dirname "$(dirname "$current_script_path")")")
+cat <<-'EOF'
 
-# shellcheck source=../lib/utils.bash
-. "${plugin_dir}/lib/utils.bash"
-
-version="<version>"
-minor_version="<version>"
-
-if [[ -n "${ASDF_INSTALL_VERSION:-}" ]]; then
-	IFS=" " read -r -a semver <<< "$(parse_semver "${ASDF_INSTALL_VERSION}")"
-	version="${ASDF_INSTALL_VERSION}"
-	minor_version="${semver[0]}.${semver[1]}"
-fi
-
-cat <<-EOF
 Basic usage:
 
   asdf list all php
   asdf latest php
-  asdf install php ${version}
+  asdf install php <version>
   asdf install php latest
-  asdf install php latest:${minor_version}
+  asdf install php latest:<version>
 
   php --version
   composer --version
 
-Check the asdf documentation for more instructions on how to install & manage versions of PHP.
+Check the asdf documentation for more instructions on how to install
+and manage versions of PHP.
 
-If you use Composer to install a global package that provides commands (e.g., friendsofphp/php-cs-fixer), you will need to run "asdf reshim php" for the binary to be in your path.
+If you use Composer to install a global package that provides
+commands (e.g., friendsofphp/php-cs-fixer), you will need to run:
+
+  asdf reshim php
+
+This will make the commands available in your shell.
+
 EOF
