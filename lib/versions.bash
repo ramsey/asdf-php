@@ -8,6 +8,22 @@ plugin_dir=$(realpath "$(dirname "$(dirname "$current_script_path")")")
 # shellcheck source=utils.bash
 . "${plugin_dir}/lib/utils.bash"
 
+# Returns the latest stable version, optionally for the given query value (i.e., "8.4").
+#
+# Arguments:
+#   sapi - The PHP SAPI to get the version for.
+#   os - The operating system to get the version for.
+#   arch - The system architecture to get the version for.
+#   query - A version string to query for, e.g., "8.4" returns the latest version in the "8.4" series.
+latest_stable_version() {
+	local sapi="$1"
+	local os="$2"
+	local arch="$3"
+	local query="${4:-}"
+
+	printf "%s" "$(list_versions "$sapi" "$os" "$arch" "$query" | tail -n1 | xargs printf "%s")"
+}
+
 # Returns a list of version numbers from the Static PHP download repository.
 #
 # Arguments:

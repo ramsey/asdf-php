@@ -40,6 +40,16 @@ setup() {
 	}
 }
 
+@test "latest_stable_version()" {
+	run -0 latest_stable_version "cli" "macos" "aarch64"
+	assert_output "8.4.16"
+}
+
+@test "latest_stable_version() with version argument '8.1'" {
+	run -0 latest_stable_version "cli" "macos" "aarch64" "8.1"
+	assert_output "8.1.34"
+}
+
 @test "list_versions() for cli, macos, aarch64" {
 	expected_output="$(cat "$DIR"/../fixtures/list_versions-cli-macos-aarch64.txt)"
 	run -0 list_versions "cli" "macos" "aarch64"
