@@ -117,7 +117,8 @@ setup() {
 }
 
 @test "parse_semver() fails with not-a-semver" {
-	run -1 parse_semver "not-a-semver"
+	run -0 parse_semver "not-a-semver"
+	assert_output ""
 }
 
 @test "parse_semver() succeeds with 2.3.4abc and treats 'abc' as a pre-release version" {
@@ -126,7 +127,8 @@ setup() {
 }
 
 @test "parse_semver() fails with a1.2.3" {
-	run -1 parse_semver "a1.2.3"
+	run -0 parse_semver "a1.2.3"
+	assert_output ""
 }
 
 @test "parse_semver() succeeds with 1.0.0-alpha" {
@@ -219,6 +221,11 @@ setup() {
 	assert_output "8|5|1|RC1|xdebug+memcached+redis|"
 }
 
+@test "parse_semver() fails with empty string" {
+	run -0 parse_semver ""
+	assert_output ""
+}
+
 @test "sort_versions() sorts version numbers" {
 	versions_to_sort="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64-unsorted.txt")"
 	expected_output="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64.txt")"
@@ -228,7 +235,8 @@ setup() {
 }
 
 @test "normalize_version() fails for invalid.version.string" {
-	run -1 normalize_version "cli" "macos" "aarch64" "invalid.version.string"
+	run -0 normalize_version "cli" "macos" "aarch64" "invalid.version.string"
+	assert_output ""
 }
 
 @test "normalize_version() returns latest stable version" {
@@ -252,7 +260,8 @@ setup() {
 }
 
 @test "normalize_version() fails for non-existent version" {
-	run -1 normalize_version "cli" "macos" "aarch64" "8.0.31"
+	run -0 normalize_version "cli" "macos" "aarch64" "8.0.31"
+	assert_output ""
 }
 
 @test "php_version_without_metadata() with '8'" {

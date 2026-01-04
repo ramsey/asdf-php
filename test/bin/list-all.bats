@@ -18,7 +18,11 @@ setup() {
 	static_php_json="$(cat "$DIR"/../fixtures/static-php-cli-bulk.json)"
 
 	curl() {
-		[[ -f "$3" ]] || "Expected a file to exist at $3"
+		if [[ ! -f "$3" ]]; then
+			printf "Expected a file to exist at %s" "$3"
+			return 1
+		fi
+
 		printf "%s\n" "$static_php_json" >"$3"
 	}
 

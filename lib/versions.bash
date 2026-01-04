@@ -92,7 +92,8 @@ normalize_version() {
 	fi
 
 	if [[ -z "$version" ]]; then
-		return 1
+		printf ""
+		return
 	fi
 
 	printf "%s" "$version"
@@ -142,7 +143,8 @@ parse_semver() {
 		metadata="${BASH_REMATCH[5]:-}"
 		metadata="${metadata#+}"
 	else
-		return 1
+		printf ""
+		return
 	fi
 
 	printf "%s|%s|%s|%s|%s|" "$major" "$minor" "$patch" "$prerelease" "$metadata"
