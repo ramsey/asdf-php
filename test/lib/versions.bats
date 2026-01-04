@@ -89,3 +89,119 @@ setup() {
 @test "list_versions() with version argument '3' fails" {
 	run ! list_versions "cli" "macos" "aarch64" "3"
 }
+
+@test "parse_semver() succeeds with 1.2.3" {
+	run -0 parse_semver "1.2.3"
+
+	IFS="|" read -r -a semver <<<"$output"
+	[ "${semver[0]}" = "1" ]
+	[ "${semver[1]}" = "2" ]
+	[ "${semver[2]}" = "3" ]
+	[ "${semver[3]}" = "" ]
+	[ "${semver[4]}" = "" ]
+}
+
+@test "parse_semver() succeeds with 1.2.4+foobar" {
+	run -0 parse_semver "1.2.4+foobar"
+	assert_output "1|2|4||foobar|"
+}
+
+@test "parse_semver() succeeds with 1.2.5-alpha01" {
+	run -0 parse_semver "1.2.5-alpha01"
+	assert_output "1|2|5|alpha01||"
+}
+
+@test "parse_semver() fails with not-a-semver" {
+	run -1 parse_semver "not-a-semver"
+}
+
+@test "parse_semver() fails with 2.3.4abc" {
+	run -1 parse_semver "2.3.4abc"
+}
+
+@test "parse_semver() fails with a1.2.3" {
+	run -1 parse_semver "a1.2.3"
+}
+
+@test "parse_semver() succeeds with 1.0.0-alpha" {
+	run -0 parse_semver "1.0.0-alpha"
+	assert_output "1|0|0|alpha||"
+}
+
+@test "parse_semver() succeeds with 1.0.0-alpha.1" {
+	run -0 parse_semver "1.0.0-alpha.1"
+	assert_output "1|0|0|alpha.1||"
+}
+
+@test "parse_semver() succeeds with 1.0.0-0.3.7" {
+	run -0 parse_semver "1.0.0-0.3.7"
+	assert_output "1|0|0|0.3.7||"
+}
+
+@test "parse_semver() succeeds with 1.0.0-x.7.z.92" {
+	run -0 parse_semver "1.0.0-x.7.z.92"
+	assert_output "1|0|0|x.7.z.92||"
+}
+
+@test "parse_semver() succeeds with 1.0.0-x-y-z.--" {
+	run -0 parse_semver "1.0.0-x-y-z.--"
+	assert_output "1|0|0|x-y-z.--||"
+}
+
+@test "parse_semver() succeeds with 1.0.0-alpha+001" {
+	run -0 parse_semver "1.0.0-alpha+001"
+	assert_output "1|0|0|alpha|001|"
+}
+
+@test "parse_semver() succeeds with 1.0.0+20130313144700" {
+	run -0 parse_semver "1.0.0+20130313144700"
+	assert_output "1|0|0||20130313144700|"
+}
+
+@test "parse_semver() succeeds with 1.0.0-beta+exp.sha.5114f85" {
+	run -0 parse_semver "1.0.0-beta+exp.sha.5114f85"
+	assert_output "1|0|0|beta|exp.sha.5114f85|"
+}
+
+@test "parse_semver() succeeds with 1.0.0+21AF26D3----117B344092BD" {
+	run -0 parse_semver "1.0.0+21AF26D3----117B344092BD"
+	assert_output "1|0|0||21AF26D3----117B344092BD|"
+}
+
+@test "parse_semver() succeeds with 1" {
+	run -0 parse_semver "1"
+	assert_output "1|||||"
+}
+
+@test "parse_semver() succeeds with 1.2" {
+	run -0 parse_semver "1.2"
+	assert_output "1|2||||"
+}
+
+@test "parse_semver() succeeds with 1.2-pl1+info" {
+	run -0 parse_semver "1.2-pl1+info"
+	assert_output "1|2||pl1|info|"
+}
+
+@test "parse_semver() succeeds with 1-pl1+info" {
+	run -0 parse_semver "1-pl1+info"
+	assert_output "1|||pl1|info|"
+}
+
+@test "parse_semver() succeeds with 1-pl1" {
+	run -0 parse_semver "1-pl1"
+	assert_output "1|||pl1||"
+}
+
+@test "parse_semver() succeeds with 1+info" {
+	run -0 parse_semver "1+info"
+	assert_output "1||||info|"
+}
+
+@test "sort_versions() sorts version numbers" {
+	versions_to_sort="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64-unsorted.txt")"
+	expected_output="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64.txt")"
+	sorted_versions="$(printf "%s" "$versions_to_sort" | sort_versions)"
+
+	[ "$sorted_versions" = "$expected_output" ]
+}

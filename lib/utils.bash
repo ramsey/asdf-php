@@ -140,47 +140,6 @@ log() {
 	fi
 }
 
-# Parse the major, minor and patch versions of a semver string.
-#
-# Arguments:
-#   token - The semver string to parse.
-function parse_semver() {
-	local token="$1"
-	local major=0
-	local minor=0
-	local patch=0
-	local prerelease=0
-	local metadata=0
-
-	local regex="^([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z\.\-]+)?(\+[0-9A-Za-z\.\-]+)?$"
-
-	if [[ $token =~ $regex ]]; then
-		major="${BASH_REMATCH[1]:-0}"
-		minor="${BASH_REMATCH[2]:-0}"
-		patch="${BASH_REMATCH[3]:-0}"
-
-		prerelease="${BASH_REMATCH[4]:-0}"
-		prerelease="${prerelease#-}"
-
-		metadata="${BASH_REMATCH[5]:-0}"
-		metadata="${metadata#+}"
-	else
-		return 1
-	fi
-
-	printf "%s %s %s %s %s" "$major" "$minor" "$patch" "$prerelease" "$metadata"
-}
-
-# Sorts and returns a list of software version numbers.
-#
-# Arguments:
-#   versions - A list of version numbers to sort.
-sort_versions() {
-	sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' \
-		| LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n \
-		| awk '{print $2}'
-}
-
 # Creates a temporary file in a POSIX-compatible way, for systems that don't have mktemp.
 tmp_file() (
 	set -o noclobber

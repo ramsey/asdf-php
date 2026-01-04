@@ -11,8 +11,6 @@ setup() {
 	load '../test_helper/bats-assert/load.bash'
 	load '../test_helper/bats-file/load.bash'
 
-	DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
-
 	load '../../lib/utils.bash'
 }
 
@@ -246,6 +244,7 @@ teardown() {
 		fail "The tee command was not expected in this context"
 	}
 
+	# shellcheck disable=SC2120
 	cat() {
 		local input
 		local msg
@@ -292,14 +291,6 @@ teardown() {
 	EOF
 
 	assert_output "$expected_output"
-}
-
-@test "sort_versions() sorts version numbers" {
-	versions_to_sort="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64-unsorted.txt")"
-	expected_output="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64.txt")"
-	sorted_versions="$(printf "%s" "$versions_to_sort" | sort_versions)"
-
-	[ "$sorted_versions" = "$expected_output" ]
 }
 
 @test "get_os() returns macos for Darwin" {
@@ -361,76 +352,4 @@ teardown() {
 @test "tmp_file() creates a file" {
 	run -0 tmp_file
 	assert_file_exists "$output"
-}
-
-@test "parse_semver() succeeds with 1.2.3" {
-	run -0 parse_semver "1.2.3"
-	assert_output "1 2 3 0 0"
-}
-
-@test "parse_semver() succeeds with 1.2.4+foobar" {
-	run -0 parse_semver "1.2.4+foobar"
-	assert_output "1 2 4 0 foobar"
-}
-
-@test "parse_semver() succeeds with 1.2.5-alpha01" {
-	run -0 parse_semver "1.2.5-alpha01"
-	assert_output "1 2 5 alpha01 0"
-}
-
-@test "parse_semver() fails with not-a-semver" {
-	run -1 parse_semver "not-a-semver"
-}
-
-@test "parse_semver() fails with 2.3.4abc" {
-	run -1 parse_semver "2.3.4abc"
-}
-
-@test "parse_semver() fails with a1.2.3" {
-	run -1 parse_semver "a1.2.3"
-}
-
-@test "parse_semver() succeeds with 1.0.0-alpha" {
-	run -0 parse_semver "1.0.0-alpha"
-	assert_output "1 0 0 alpha 0"
-}
-
-@test "parse_semver() succeeds with 1.0.0-alpha.1" {
-	run -0 parse_semver "1.0.0-alpha.1"
-	assert_output "1 0 0 alpha.1 0"
-}
-
-@test "parse_semver() succeeds with 1.0.0-0.3.7" {
-	run -0 parse_semver "1.0.0-0.3.7"
-	assert_output "1 0 0 0.3.7 0"
-}
-
-@test "parse_semver() succeeds with 1.0.0-x.7.z.92" {
-	run -0 parse_semver "1.0.0-x.7.z.92"
-	assert_output "1 0 0 x.7.z.92 0"
-}
-
-@test "parse_semver() succeeds with 1.0.0-x-y-z.--" {
-	run -0 parse_semver "1.0.0-x-y-z.--"
-	assert_output "1 0 0 x-y-z.-- 0"
-}
-
-@test "parse_semver() succeeds with 1.0.0-alpha+001" {
-	run -0 parse_semver "1.0.0-alpha+001"
-	assert_output "1 0 0 alpha 001"
-}
-
-@test "parse_semver() succeeds with 1.0.0+20130313144700" {
-	run -0 parse_semver "1.0.0+20130313144700"
-	assert_output "1 0 0 0 20130313144700"
-}
-
-@test "parse_semver() succeeds with 1.0.0-beta+exp.sha.5114f85" {
-	run -0 parse_semver "1.0.0-beta+exp.sha.5114f85"
-	assert_output "1 0 0 beta exp.sha.5114f85"
-}
-
-@test "parse_semver() succeeds with 1.0.0+21AF26D3----117B344092BD" {
-	run -0 parse_semver "1.0.0+21AF26D3----117B344092BD"
-	assert_output "1 0 0 0 21AF26D3----117B344092BD"
 }
