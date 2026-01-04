@@ -39,6 +39,10 @@ setup() {
 		fi
 	}
 
+	normalize_version() {
+		printf "8.3.0"
+	}
+
 	expected_output=$(
 		cat <<-'EOF'
 			asdf-php: Downloading PHP version 8.3.0 (cli, test_os, test_arch)...
@@ -50,6 +54,7 @@ setup() {
 	run download_release 8.3.0 /path/to/download test_os test_arch
 	assert_output "$expected_output"
 
+	unset -f normalize_version
 	unset -f curl
 	unset -f tar
 	unset -f rm
@@ -58,6 +63,10 @@ setup() {
 @test "download_release() when it fails to download tarball" {
 	curl() {
 		return 1
+	}
+
+	normalize_version() {
+		printf "3.0.0"
 	}
 
 	expected_output=$(
@@ -70,6 +79,25 @@ setup() {
 	run ! download_release 3.0.0 /path/to/download test_os test_arch
 	assert_output "$expected_output"
 
+	unset -f normalize_version
+	unset -f curl
+}
+
+@test "download_release() when it fails to normalize the version" {
+	normalize_version() {
+		return 1
+	}
+
+	expected_output=$(
+		cat <<-'EOF'
+			asdf-php: No versions found for PHP 3.0.0 (cli, test_os, test_arch)
+		EOF
+	)
+
+	run ! download_release 3.0.0 /path/to/download test_os test_arch
+	assert_output "$expected_output"
+
+	unset -f normalize_version
 	unset -f curl
 }
 
@@ -82,6 +110,10 @@ setup() {
 		fi
 
 		fail "The curl command received unexpected arguments: ${*}"
+	}
+
+	normalize_version() {
+		printf "8.1.34"
 	}
 
 	tar() {
@@ -98,6 +130,7 @@ setup() {
 	run ! download_release 8.1.34 /path/to/download test_os test_arch
 	assert_output "$expected_output"
 
+	unset -f normalize_version
 	unset -f curl
 	unset -f tar
 }
@@ -114,6 +147,10 @@ setup() {
 		fi
 
 		fail "The curl command received unexpected arguments: ${*}"
+	}
+
+	normalize_version() {
+		printf "8.4.1"
 	}
 
 	tar() {
@@ -135,6 +172,7 @@ setup() {
 	run ! download_release 8.4.1 /path/to/download test_os test_arch
 	assert_output "$expected_output"
 
+	unset -f normalize_version
 	unset -f curl
 	unset -f tar
 	unset -f rm
@@ -153,6 +191,10 @@ setup() {
 		fi
 
 		fail "The curl command received unexpected arguments: ${*}"
+	}
+
+	normalize_version() {
+		printf "8.4.3"
 	}
 
 	tar() {
@@ -175,6 +217,7 @@ setup() {
 	run ! download_release 8.4.3 /path/to/download test_os test_arch
 	assert_output "$expected_output"
 
+	unset -f normalize_version
 	unset -f curl
 	unset -f tar
 	unset -f rm
@@ -216,6 +259,10 @@ setup() {
 		fi
 	}
 
+	normalize_version() {
+		printf "8.3.0"
+	}
+
 	expected_output=$(
 		cat <<-'EOF'
 			asdf-php: Downloading PHP version 8.3.0 (cli, test_os, test_arch)...
@@ -231,6 +278,54 @@ setup() {
 	run download_release 8.3.0 /path/to/download test_os test_arch
 	assert_output "$expected_output"
 
+	unset -f normalize_version
+	unset -f curl
+	unset -f tar
+	unset -f rm
+	unset -v ASDF_PHP_FPM
+}
+
+@test "download_release() when php-fpm version fails to normalize" {
+	curl() {
+		local expected1="-fsSL -o /path/to/download/php-8.3.0-cli-test_os-test_arch.tar.gz -C - https://dl.static-php.dev/static-php-cli/bulk/php-8.3.0-cli-test_os-test_arch.tar.gz"
+
+		if [[ "${*}" = "$expected1" ]]; then
+			return 0
+		fi
+
+		fail "The curl command received unexpected arguments: ${*}"
+	}
+
+	tar() {
+		return 0
+	}
+
+	rm() {
+		return 0
+	}
+
+	normalize_version() {
+		if [[ "$1" = "fpm" ]]; then
+			return 1
+		fi
+
+		printf "8.3.0"
+	}
+
+	expected_output=$(
+		cat <<-'EOF'
+			asdf-php: Downloading PHP version 8.3.0 (cli, test_os, test_arch)...
+			asdf-php: No versions found for PHP 8.3.0 (fpm, test_os, test_arch)
+		EOF
+	)
+
+	# shellcheck disable=SC2034
+	ASDF_PHP_FPM=yes
+
+	run download_release 8.3.0 /path/to/download test_os test_arch
+	assert_output "$expected_output"
+
+	unset -f normalize_version
 	unset -f curl
 	unset -f tar
 	unset -f rm

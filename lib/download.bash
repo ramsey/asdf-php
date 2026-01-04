@@ -8,6 +8,9 @@ plugin_dir=$(realpath "$(dirname "$(dirname "$current_script_path")")")
 # shellcheck source=utils.bash
 . "${plugin_dir}/lib/utils.bash"
 
+# shellcheck source=versions.bash
+. "${plugin_dir}/lib/versions.bash"
+
 # Downloads a PHP release for installation by asdf.
 #
 # If the environment variable ASDF_PHP_FPM is present and contains a truthy value, as supported by is_truthy, then
@@ -24,14 +27,20 @@ download_release() {
 	local os="$3"
 	local arch="$4"
 
-	download_static_php "$version" "$download_path" "cli" "$os" "$arch"
+	local normalized_cli_version
+	normalized_cli_version="$(normalize_version "cli" "$os" "$arch" "$version")"
+	[[ -n "$normalized_cli_version" ]] || asdf_fail "No versions found for PHP ${version} (cli, ${os}, ${arch})"
+	download_static_php "$normalized_cli_version" "$download_path" "cli" "$os" "$arch"
 
 	if is_truthy "${ASDF_PHP_FPM:-no}"; then
-		download_static_php "$version" "$download_path" "fpm" "$os" "$arch"
+		local normalized_fpm_version
+		normalized_fpm_version="$(normalize_version "fpm" "$os" "$arch" "$version")"
+		[[ -n "$normalized_fpm_version" ]] || asdf_fail "No versions found for PHP ${version} (fpm, ${os}, ${arch})"
+		download_static_php "$normalized_fpm_version" "$download_path" "fpm" "$os" "$arch"
 	fi
 
-	download_php_ini "$version" "$download_path" "development"
-	download_php_ini "$version" "$download_path" "production"
+	download_php_ini "$normalized_cli_version" "$download_path" "development"
+	download_php_ini "$normalized_cli_version" "$download_path" "production"
 }
 
 # Downloads a PHP release for installation by asdf.
