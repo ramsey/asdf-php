@@ -111,6 +111,9 @@ normalize_version() {
 #
 # In proper semver <https://semver.org>, there must be a hyphen to delimit the pre-release version. However, PHP does
 # not include the hyphen in its pre-release version (e.g., "8.5.0alpha1", "8.5.0RC1", etc.), so we must accommodate.
+# We also want to allow the use of the +-symbol in the metadata string, so we can support strings like:
+#
+#   8.6.0RC3+xdebug+memcached+redis
 #
 # Arguments:
 #   token - The semver string to parse.
@@ -122,7 +125,7 @@ parse_semver() {
 	local prerelease=0
 	local metadata=0
 
-	local regex="^([0-9]+)(\.[0-9]+)?(\.[0-9]+)?(-?[0-9A-Za-z\.\-]+)?(\+[0-9A-Za-z\.\-]+)?$"
+	local regex="^([0-9]+)(\.[0-9]+)?(\.[0-9]+)?(-?[0-9A-Za-z\.\-]+)?(\+[0-9A-Za-z\+\.\-]+)?$"
 
 	if [[ $token =~ $regex ]]; then
 		major="${BASH_REMATCH[1]:-}"

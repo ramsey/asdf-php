@@ -214,6 +214,11 @@ setup() {
 	assert_output "8|5|0|alpha1-1|build1|"
 }
 
+@test "parse_semver() succeeds with 8.5.1RC1+xdebug+memcached+redis" {
+	run -0 parse_semver "8.5.1RC1+xdebug+memcached+redis"
+	assert_output "8|5|1|RC1|xdebug+memcached+redis|"
+}
+
 @test "sort_versions() sorts version numbers" {
 	versions_to_sort="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64-unsorted.txt")"
 	expected_output="$(cat "$DIR/../fixtures/list_versions-cli-macos-aarch64.txt")"
