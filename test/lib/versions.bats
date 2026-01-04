@@ -81,13 +81,18 @@ setup() {
 }
 
 @test "list_versions() with version argument '8.1.34'" {
-	expected_output="$(cat "$DIR"/../fixtures/list_versions-cli-macos-aarch64-php-8134.txt)"
 	run -0 list_versions "cli" "macos" "aarch64" "8.1.34"
-	assert_output "$expected_output"
+	assert_output "8.1.34"
 }
 
 @test "list_versions() with version argument '3' fails" {
 	run ! list_versions "cli" "macos" "aarch64" "3"
+}
+
+@test "list_versions() with invalid version string" {
+	expected_output="$(cat "$DIR"/../fixtures/list_versions-cli-linux-x86_64.txt)"
+	run -0 list_versions "cli" "linux" "x86_64" "invalid.version.string"
+	assert_output "$expected_output"
 }
 
 @test "parse_semver() succeeds with 1.2.3" {

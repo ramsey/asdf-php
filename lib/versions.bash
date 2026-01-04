@@ -30,17 +30,26 @@ latest_stable_version() {
 #   sapi - The PHP SAPI to list versions for.
 #   os - The operating system to list versions for.
 #   arch - The system architecture to list versions for.
+#   query - A version string to query for, e.g., "8.4" returns all versions starting with "8.4."
 list_versions() {
 	local sapi="$1"
 	local os="$2"
 	local arch="$3"
+	local query="${4:-}"
+
+	local major="[0-9]+"
+	local minor="[0-9]+"
+	local patch="[0-9]+"
 
 	local semver
-	IFS="." read -r -a semver <<<"${4:-}"
+	semver="$(parse_semver "$query")"
 
-	local major="${semver[0]:-[[:digit:]]+}"
-	local minor="${semver[1]:-[[:digit:]]+}"
-	local patch="${semver[2]:-[[:digit:]]+}"
+	if [[ -n "$semver" ]]; then
+		IFS="|" read -r -a semver <<<"${semver}"
+		major="${semver[0]:-$major}"
+		minor="${semver[1]:-$minor}"
+		patch="${semver[2]:-$patch}"
+	fi
 
 	local tmp_name
 	tmp_name=$(tmp_file)
