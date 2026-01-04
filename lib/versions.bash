@@ -148,6 +148,33 @@ parse_semver() {
 	printf "%s|%s|%s|%s|%s|" "$major" "$minor" "$patch" "$prerelease" "$metadata"
 }
 
+# Returns a PHP-style version string without any build metadata attached.
+#
+# For example, if the version string is "8.4.16RC1+memcached-xdebug", this returns "8.4.16RC1".
+#
+# Note: "PHP-style" is a reference to not using a hyphen between the version number and the pre-release version, as is
+# defined by the semver specification <https://semver.org>.
+php_version_without_metadata() {
+	local version="$1"
+
+	local major="0"
+	local minor="0"
+	local patch="0"
+	local prerelease=""
+
+	local semver
+	semver="$(parse_semver "$version")"
+	if [[ -n "$semver" ]]; then
+		IFS="|" read -r -a semver <<<"$semver"
+		major="${semver[0]:-$major}"
+		minor="${semver[1]:-$minor}"
+		patch="${semver[2]:-$patch}"
+		prerelease="${semver[3]:-$prerelease}"
+	fi
+
+	printf "%s.%s.%s%s" "$major" "$minor" "$patch" "$prerelease"
+}
+
 # Sorts and returns a list of software version numbers.
 #
 # Arguments:

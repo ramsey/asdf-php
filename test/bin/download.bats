@@ -13,7 +13,7 @@ setup() {
 	ASDF_DOWNLOAD_PATH="$(temp_make)"
 
 	# shellcheck disable=SC2034
-	ASDF_INSTALL_VERSION="8.1.34"
+	ASDF_INSTALL_VERSION="latest:8.1"
 
 	# shellcheck disable=SC2034
 	ASDF_PHP_OS="linux"

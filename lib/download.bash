@@ -58,13 +58,16 @@ download_static_php() {
 	local os="$4"
 	local arch="$5"
 
+	local php_version
+	php_version="$(php_version_without_metadata "$version")"
+
 	local download_file
-	download_file="${download_path}/php-${version}-${sapi}-${os}-${arch}.tar.gz"
+	download_file="${download_path}/php-${php_version}-${sapi}-${os}-${arch}.tar.gz"
 
 	local url
-	url="${STATIC_PHP_BULK_PREFIX}/php-${version}-${sapi}-${os}-${arch}.tar.gz"
+	url="${STATIC_PHP_BULK_PREFIX}/php-${php_version}-${sapi}-${os}-${arch}.tar.gz"
 
-	asdf_info "Downloading PHP version ${version} (${sapi}, ${os}, ${arch})..."
+	asdf_info "Downloading PHP version ${php_version} (${sapi}, ${os}, ${arch})..."
 
 	curl "${CURL_OPTS[@]}" -o "$download_file" -C - "$url" \
 		|| asdf_fail "Could not download $url"
@@ -100,13 +103,16 @@ download_php_ini() {
 	local download_path="$2"
 	local variant="$3"
 
-	asdf_info "Downloading php.ini-${variant} file for PHP ${version}..."
+	local php_version
+	php_version="$(php_version_without_metadata "$version")"
+
+	asdf_info "Downloading php.ini-${variant} file for PHP ${php_version}..."
 
 	local download_file
 	download_file="${download_path}/php.ini-${variant}"
 
 	local url
-	url="${GIT_PHP_TAG_RAW_PREFIX}${version}/php.ini-${variant}"
+	url="${GIT_PHP_TAG_RAW_PREFIX}${php_version}/php.ini-${variant}"
 
 	curl "${CURL_OPTS[@]}" -o "$download_file" -C - "$url" \
 		|| asdf_fail "Could not download $url"

@@ -254,3 +254,33 @@ setup() {
 @test "normalize_version() fails for non-existent version" {
 	run -1 normalize_version "cli" "macos" "aarch64" "8.0.31"
 }
+
+@test "php_version_without_metadata() with '8'" {
+	run -0 php_version_without_metadata "8"
+	assert_output "8.0.0"
+}
+
+@test "php_version_without_metadata() with '8.4'" {
+	run -0 php_version_without_metadata "8.4"
+	assert_output "8.4.0"
+}
+
+@test "php_version_without_metadata() with '8.4.16'" {
+	run -0 php_version_without_metadata "8.4.16"
+	assert_output "8.4.16"
+}
+
+@test "php_version_without_metadata() with '8.5.0alpha2'" {
+	run -0 php_version_without_metadata "8.5.0alpha2"
+	assert_output "8.5.0alpha2"
+}
+
+@test "php_version_without_metadata() with '8.5.1RC1'" {
+	run -0 php_version_without_metadata "8.5.1RC1"
+	assert_output "8.5.1RC1"
+}
+
+@test "php_version_without_metadata() with '8.5.1RC1+memcached+xdebug'" {
+	run -0 php_version_without_metadata "8.5.1RC1+memcached+xdebug"
+	assert_output "8.5.1RC1"
+}
