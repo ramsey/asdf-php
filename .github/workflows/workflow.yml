@@ -106,7 +106,6 @@ jobs:
           - ubuntu-latest
           - macos-latest
         php-version:
-          - latest:8.0
           - latest:8.1
           - latest:8.2
           - latest:8.3
