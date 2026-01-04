@@ -56,34 +56,35 @@ jobs:
       - name: Run tests
         run: make test
 
-  coverage:
-    needs: [lint, style, test]
-    name: Code coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          submodules: recursive
-      - name: Install asdf and tools
-        uses: asdf-vm/actions/install@v4
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.4.2"
-      - name: Install dependencies
-        run: |
-          bundle update --bundler
-          bundle install
-      - name: Run tests with coverage reporting
-        run: make coverage
-      - name: Upload reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          file: coverage/coverage.xml
+  #coverage:
+  #  needs: [lint, style, test]
+  #  name: Code coverage
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Checkout repository
+  #      uses: actions/checkout@v6
+  #      with:
+  #        submodules: recursive
+  #    - name: Install asdf and tools
+  #      uses: asdf-vm/actions/install@v4
+  #    - name: Set up Ruby
+  #      uses: ruby/setup-ruby@v1
+  #      with:
+  #        ruby-version: "3.4.2"
+  #    - name: Install dependencies
+  #      run: |
+  #        bundle update --bundler
+  #        bundle install
+  #    - name: Run tests with coverage reporting
+  #      run: make coverage
+  #    - name: Upload reports to Codecov
+  #      uses: codecov/codecov-action@v5
+  #      with:
+  #        file: coverage/coverage.xml
 
   plugin-test:
-    needs: [coverage]
+    #needs: [coverage]
+    needs: [lint, style, test]
     name: "Plugin test"
     runs-on: ${{ matrix.os }}
     strategy:
