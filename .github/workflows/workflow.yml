@@ -76,7 +76,9 @@ jobs:
           bundle update --bundler
           bundle install
       - name: Run tests with coverage reporting
-        run: make coverage
+        run: |
+          make coverage
+          ll coverage/
         continue-on-error: true
       - name: Upload reports to Codecov
         uses: codecov/codecov-action@v5
