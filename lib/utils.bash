@@ -13,6 +13,12 @@ GIT_PHP_TAG_RAW_PREFIX="https://github.com/php/php-src/raw/refs/tags/php-"
 # shellcheck disable=SC2034
 CURL_OPTS=(-fsSL)
 
+VERSIONS_CACHE_FILE="${TMPDIR:-/tmp}/asdf-php_versions_cache.json"
+VERSIONS_CACHE_FILE="${ASDF_PHP_CACHE_FILE:-$VERSIONS_CACHE_FILE}"
+
+# shellcheck disable=SC2034
+WEEK_IN_SECONDS=604800
+
 # Appends a message to the log.
 #
 # If you do not provide an argument, you may pipe output to this command

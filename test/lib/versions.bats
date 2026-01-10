@@ -6,8 +6,12 @@ setup() {
 
 	load '../test_helper/bats-support/load.bash'
 	load '../test_helper/bats-assert/load.bash'
+	load '../test_helper/bats-file/load.bash'
 
 	DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
+
+	ASDF_PHP_CACHE_FILE="$(temp_make --prefix "asdf-php-")/asdf-php-cache-test.json"
+	export ASDF_PHP_CACHE_FILE
 
 	load '../../lib/versions.bash'
 
@@ -25,8 +29,8 @@ setup() {
 			return 1
 		fi
 
-		if [[ ! -f "$3" ]]; then
-			printf "Expected a file to exist at %s\n" "$3"
+		if [[ -z "$3" ]]; then
+			printf "Expected a third argument passed to curl\n"
 			return 1
 		fi
 
@@ -38,6 +42,11 @@ setup() {
 
 		printf "%s\n" "$static_php_json" >"$3"
 	}
+}
+
+teardown() {
+	unset -v ASDF_PHP_CACHE_FILE
+	unset -f curl
 }
 
 @test "latest_stable_version()" {
@@ -292,4 +301,64 @@ setup() {
 @test "php_version_without_metadata() with '8.5.1RC1+memcached+xdebug'" {
 	run -0 php_version_without_metadata "8.5.1RC1+memcached+xdebug"
 	assert_output "8.5.1RC1"
+}
+
+@test "get_versions_file() creates cache file when file does not exist" {
+	# The cache file should not exist.
+	[ ! -f "$ASDF_PHP_CACHE_FILE" ]
+
+	run -0 latest_stable_version "cli" "macos" "aarch64"
+	assert_output "8.4.16"
+
+	# The cache file should now exist.
+	[ -f "$ASDF_PHP_CACHE_FILE" ]
+}
+
+@test "get_versions_file() reads from cache file" {
+	curl() {
+		printf "curl should not have been called during this test.\n"
+		return 1
+	}
+
+	# Write the contents to the cache file.
+	printf "%s\n" "$static_php_json" >"$ASDF_PHP_CACHE_FILE"
+
+	# The cache file should exist.
+	[ -f "$ASDF_PHP_CACHE_FILE" ]
+
+	run -0 latest_stable_version "cli" "macos" "aarch64"
+	assert_output "8.4.16"
+
+	unset -f curl
+}
+
+@test "get_versions_file() fetches file with curl when cache file is older than a week" {
+	local now
+	local one_week_ago
+	local two_weeks_ago
+
+	now=$(date +%s)
+	one_week_ago=$((now - WEEK_IN_SECONDS))
+
+	# Because GNU date and BSD date can't agree.
+	if [[ "$(uname -s)" = "Darwin" ]]; then
+		two_weeks_ago="$(date -v -2w +%Y%m%d%H%M.%S)"
+	else
+		two_weeks_ago="$(date --date="2 weeks ago" +%Y%m%d%H%M.%S)"
+	fi
+
+	# Write the contents to the cache file.
+	printf "%s\n" "$static_php_json" >"$ASDF_PHP_CACHE_FILE"
+
+	# Set the cache file so that it was last modified two weeks ago.
+	touch -t "$two_weeks_ago" "$ASDF_PHP_CACHE_FILE"
+
+	# The cache file modification time should be earlier than one week ago.
+	[[ $(date -r "$ASDF_PHP_CACHE_FILE" +%s) -lt one_week_ago ]]
+
+	run -0 latest_stable_version "cli" "macos" "aarch64"
+	assert_output "8.4.16"
+
+	# The cache file modification time should be more recent than one week ago.
+	[[ $(date -r "$ASDF_PHP_CACHE_FILE" +%s) -gt one_week_ago ]]
 }

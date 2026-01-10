@@ -8,6 +8,24 @@ plugin_dir=$(realpath "$(dirname "$(dirname "$current_script_path")")")
 # shellcheck source=utils.bash
 . "${plugin_dir}/lib/utils.bash"
 
+# Compiles the file where all PHP versions are stored and returns the filename for parsing.
+#
+# This downloads the data and caches that file locally for up to one week to avoid unnecessary round-trip calls.
+get_versions_file() {
+	local now
+	now=$(date +%s)
+
+	local one_week_ago
+	one_week_ago=$((now - WEEK_IN_SECONDS))
+
+	if [[ ! -f "$VERSIONS_CACHE_FILE" || $(date -r "$VERSIONS_CACHE_FILE" +%s) -lt one_week_ago ]]; then
+		curl ${CURL_OPTS[@]+"${CURL_OPTS[@]}"} -o "$VERSIONS_CACHE_FILE" "$STATIC_PHP_BULK_LIST" \
+			|| asdf_fail "Could not download $STATIC_PHP_BULK_LIST"
+	fi
+
+	printf "%s" "$VERSIONS_CACHE_FILE"
+}
+
 # Returns the latest stable version, optionally for the given query value (i.e., "8.4").
 #
 # Arguments:
@@ -51,13 +69,10 @@ list_versions() {
 		patch="${semver[2]:-$patch}"
 	fi
 
-	local tmp_name
-	tmp_name=$(tmp_file)
+	local versions_filename
+	versions_filename="$(get_versions_file)"
 
-	curl ${CURL_OPTS[@]+"${CURL_OPTS[@]}"} -o "$tmp_name" "$STATIC_PHP_BULK_LIST" \
-		|| asdf_fail "Could not download $STATIC_PHP_BULK_LIST"
-
-	awk <"$tmp_name" -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/name\042/){ val=$(i+1); gsub(/"/, "", val); print val }}}' \
+	awk <"$versions_filename" -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/name\042/){ val=$(i+1); gsub(/"/, "", val); print val }}}' \
 		| grep -o -E "php\-${major}\.${minor}\.${patch}\-${sapi}\-${os}\-${arch}\.tar\.gz" \
 		| sed 's/php-//' \
 		| sed "s/-${sapi}-${os}-${arch}.tar.gz//" \
