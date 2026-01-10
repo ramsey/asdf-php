@@ -7,12 +7,12 @@ setup() {
 	load '../test_helper/bats-assert/load.bash'
 }
 
-@test "help.links" {
-	help-links() {
-		load '../../bin/help.links'
+@test "help.deps" {
+	help-deps() {
+		load '../../bin/help.deps'
 	}
 
-	run -0 help-links
+	run -0 help-deps
 
-	assert_line "Static PHP: https://static-php.dev"
+	assert_line "coreutils"
 }

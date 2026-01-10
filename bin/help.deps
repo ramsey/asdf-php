@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+cat <<-'EOF'
+coreutils
+curl
+gzip
+tar
+EOF
